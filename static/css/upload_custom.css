@@ -1,0 +1,57 @@
+/* ------------------
+   Image & Icon Sizing
+------------------- */
+.img-icon-size {
+  width: 50px;
+  height: 50px;
+}
+
+/* ------------------
+   Heading Styles
+------------------- */
+.heading-desktop {
+  font-size: 18px;
+}
+
+.heading-mobile {
+  font-size: 18px;
+}
+
+/* ------------------
+   Custom Horizontal Rule
+------------------- */
+.hr-custom {
+  border: 2px solid #ccc;
+  width: 100%;
+}
+
+/* ------------------
+   Buttons & Margins
+------------------- */
+.btn-mt {
+  margin-top: 2px;
+}
+
+/* Form inline display */
+.form-inline {
+  display: inline;
+}
+
+/* ------------------
+   Team Item & Image Styling
+------------------- */
+.team-item-limited {
+  max-width: 300px;
+  margin: 0 auto;
+  height: 100px;
+}
+
+.team-image-fixedsize {
+  width: 100px;
+  height: 100px;
+}
+
+/* Force image to fill container while preserving aspect ratio */
+.object-cover {
+  object-fit: cover;
+}
