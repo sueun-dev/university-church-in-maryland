@@ -55,7 +55,7 @@ python run.py   # Starts the Flask dev server
    - Ubuntu 22.04 LTS instance with firewall rules allowing HTTPS/HTTP.  
 2. **HTTPS Configuration**:   
    ```shell
-   sudo certbot --nginx -d umdkusa.com -d www.umdkusa.com
+   sudo certbot --nginx -d uchurchmd.org -d www.uchurchmd.org
    ```
 3. **Run as Background Service**:  
    ```shell

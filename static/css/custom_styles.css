@@ -1,0 +1,30 @@
+/* Back to Top Button */
+.back-to-top {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    display: block;
+    z-index: 100;
+  }
+  
+
+  .btn-outline-red {
+    color: #ff0000;               /* Red text color */
+    border: 2px solid #ff0000;    /* Red border */
+    background-color: transparent;/* No background fill */
+    border-radius: 0;             /* Square corners; remove if you want rounded corners */
+    padding: 0.5rem 1rem;         /* Adjust padding to taste */
+    text-decoration: none;        /* Ensure no underline */
+  }
+  
+  /* Hover effect: fill red background and white text */
+  .btn-outline-red:hover {
+    color: #fff;         /* White text */
+    background-color: #ff0000;
+    text-decoration: none;
+  }
+  
+  html {
+    scroll-behavior: smooth;
+  }
+  

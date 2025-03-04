@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="https://www.sitemaps.org/schemas/sitemap/0.9">
+
+  <!-- 홈페이지 (index) -->
+  <url>
+    <loc>https://www.uchurchmd.org/</loc>
+    <lastmod>2025-03-04</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+
+  <!-- 자료공유 (Upload) 페이지 -->
+  <url>
+    <loc>https://www.uchurchmd.org/upload</loc>
+    <lastmod>2025-03-04</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+</urlset>

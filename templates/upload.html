@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% set active_page = 'upload' %}
+{% block title %}유니버시티 교회 자료 업로드{% endblock %}
+{% block meta_keywords %}유니버시티 교회, University Church, 교회, 예배, 자료 업로드, 파일 공유{% endblock %}
+{% block meta_description %}유니버시티 교회 자료 업로드 페이지. 사진, 문서, 예배 자료 등 다양한 파일을 받아보세요.{% endblock %}
+{% block css %}
+<link href="/static/css/custom_styles.css" rel="stylesheet" />
+<link href="/static/css/upload_custom.css" rel="stylesheet" />
+{% endblock %}
+<meta charset="UTF-8">
+
+{% block content %}
+<div class="container-xxl py-5">
+  <div class="container">
+    <div class="text-center mx-auto mb-5" style="max-width: 600px;">
+      <h1 class="mb-3">유니버시티 교회 자료 업로드 및 공유</h1>
+      <p>
+        유니버시티 교회 커뮤니티의 사진, 문서, 예배 자료 등 다양한 파일을 업로드 됩니다. (관리자만 파일을 올릴 수 있습니다)
+      </p>
+    </div>
+    <hr class="my-4 hr-custom" />
+
+    <div class="mt-5">
+      <h2 class="text-center mb-4">업로드된 파일</h2>
+      <div class="row g-4" id="file-list">
+        {% for file in files %}
+          <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
+            <div class="card position-relative">
+              {% if file.is_new %}
+                <span class="badge bg-danger position-absolute top-0 end-0 m-2">new</span>
+              {% endif %}
+              <div class="card-body">
+                <h5 class="card-title">{{ file.filename }}</h5>
+                <p class="card-text">업로드 날짜: {{ file.upload_date.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+                <a href="/download/{{ file.id }}" class="btn btn-primary btn-mt">보기</a>
+                <form action="/delete/{{ file.id }}" method="POST" class="form-inline" onsubmit="return confirmPresident()">
+                  <button type="submit" class="btn btn-danger btn-mt">삭제</button>
+                </form>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+      <p class="text-center mt-3">업로드된 파일 목록입니다. 필요한 자료를 자유롭게 확인하고 활용해 보세요.</p>
+    </div>
+
+    <hr class="my-4 hr-custom" />
+
+    <div class="row g-4">
+      <div class="col-lg-8 mx-auto wow fadeInUp" data-wow-delay="0.3s">
+        <div class="bg-light rounded p-4">
+          <form action="/upload" method="POST" enctype="multipart/form-data" onsubmit="return confirmPresident()">
+            <div class="mb-3">
+              <label for="file_input" class="form-label">파일 선택</label>
+              <input
+                class="form-control"
+                type="file"
+                id="file_input"
+                name="file_input"
+                accept=".pdf, .docx, .png, .jpeg, .jpg, .gif, .bmp, .svg, .txt, .rtf, .csv, .html"
+                required
+              />
+            </div>
+            <button type="submit" class="btn btn-primary py-3 px-5 mt-3">관리자 버튼</button>
+          </form>
+
+          {% if success %}
+            <div class="alert alert-success mt-3" role="alert">파일 업로드 성공!</div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
