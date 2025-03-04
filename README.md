@@ -1,6 +1,6 @@
 # University Church in Maryland Official Website
 
-**Live Site**: [https://www.uchurchmd.org/]](https://www.uchurchmd.org/)  
+**Live Site**: [https://www.uchurchmd.org/](https://www.uchurchmd.org/)  
 [![License](https://img.shields.io/badge/License-Proprietary-blue.svg)](LICENSE)
 
 ---
