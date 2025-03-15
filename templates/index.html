@@ -1,25 +1,228 @@
 {% extends 'base.html' %}
 {% set active_page = 'home' %}
-
 {% block title %}University Church{% endblock %}
-
 {% block meta_keywords %}
   메릴랜드 교회, 유니버시티 교회, University Church, 메릴랜드, 교회, Church, College Park, 한인 교회, 한국어 예배, 메릴랜드 한인 교회, 한인
 {% endblock %}
-
 {% block meta_description %}
   유니버시티 교회는 50여년간 메릴랜드 대학 가족과 지역 이민사회가 함께 세워 온 신앙 공동체입니다.
 {% endblock %}
-
 {% block css %}
   {{ super() }}
   <link href="/static/css/custom_styles.css" rel="stylesheet" />
-  <link href="/static/css/chat.css" rel="stylesheet" />
+  <style>
+    /* Chat Toggle Button */
+    #chat-toggle {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #007bff;
+      color: #fff;
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      z-index: 2000;
+    }
+    /* Chat Popup Container */
+    #chat-popup {
+      position: fixed;
+      bottom: 90px;
+      right: 20px;
+      width: 300px;
+      background: #fff;
+      border: 1px solid #ccc;
+      padding: 10px;
+      display: none;
+      z-index: 2000;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    }
+    #chat-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    #chat-header h4 { margin: 0; }
+    /* Pastor Status Indicator */
+    #pastor-indicator {
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+    }
+    #pastor-status-dot {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background-color: red; /* default offline */
+      margin-left: 5px;
+    }
+    #chat-close {
+      background: none;
+      border: none;
+      font-size: 20px;
+      cursor: pointer;
+    }
+    /* Pre-chat Form Styles */
+    #prechat-form-container form {
+      display: flex;
+      flex-direction: column;
+    }
+    #prechat-form-container input {
+      margin-bottom: 10px;
+      padding: 8px;
+      font-size: 14px;
+    }
+    #prechat-form-container button {
+      padding: 10px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+    /* Chat widget area (hidden until pre-chat is complete) */
+    #chat-widget { display: none; }
+    #chat-messages {
+      height: 200px;
+      overflow-y: auto;
+      border: 1px solid #ddd;
+      padding: 5px;
+      margin-bottom: 10px;
+    }
+    #chat-widget input {
+      width: 80%;
+      padding: 8px;
+    }
+    #chat-widget button { padding: 8px; cursor: pointer; }
+  </style>
 {% endblock %}
-
 {% block content %}
-  <!-- Your HTML content remains unchanged -->
-  <!-- Header Section, Vision Section, Pastor Section, Contact Section, etc. -->
+  <!-- Header Section -->
+  <div class="container-fluid header bg-white p-0">
+    <div class="row g-0 align-items-center flex-column-reverse flex-md-row">
+      <div class="col-md-6 p-5 mt-lg-5">
+        <h1 class="display-5 animated fadeIn mb-4">
+          <span class="text-primary">University Church</span> in College Park
+        </h1>
+        <p class="animated fadeIn mb-4 pb-2">
+          유니버시티 교회는 50여년간 메릴랜드 대학 가족과 지역 이민사회가 함께 세워 온 신앙 공동체입니다.
+        </p>
+        <p class="animated fadeIn mb-4 pb-2">
+          주일 예배, 성경 공부, 그리고 다양한 소그룹 모임을 통해 하나님의 은혜와 사랑을 나누며, 모든 이들을 환영합니다.
+        </p>
+      </div>
+      <div class="col-md-6 fadeIn d-flex justify-content-center">
+        <div class="owl-carousel header-carousel">
+          <div class="owl-carousel-item">
+            <div class="d-flex justify-content-center">
+              <img class="img-fluid mx-auto" src="/static/img/school_main_02.png" oncontextmenu="return false;" style="max-width: 70%;" alt="Church Main 02" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Vision Section -->
+  <div class="container">
+    <div class="bg-light rounded p-4">
+      <div class="bg-white rounded p-4" style="border: 1px dashed rgba(0, 185, 142, .3)">
+        <div class="row g-5 align-items-center">
+          <div class="col-lg-6 wow fadeIn" data-wow-delay="0.1s">
+            <h1 class="mb-4">예배 및 모임 시간</h1>
+            <div class="row g-4">
+              <div class="col-lg-4 col-sm-6 wow fadeInUp" data-wow-delay="0.1s">
+                <a class="cat-item d-block bg-light text-center rounded p-3">
+                  <div class="rounded p-4">
+                    <h6>주일 예배</h6>
+                    <p>매주 주일 오전 11시</p>
+                  </div>
+                </a>
+              </div>
+              <div class="col-lg-4 col-sm-6 wow fadeInUp" data-wow-delay="0.3s">
+                <a class="cat-item d-block bg-light text-center rounded p-3">
+                  <div class="rounded p-4">
+                    <h6>성경 공부</h6>
+                    <p>매주 주일 오후 1시</p>
+                  </div>
+                </a>
+              </div>
+              <div class="col-lg-4 col-sm-6 wow fadeInUp" data-wow-delay="0.5s">
+                <a class="cat-item d-block bg-light text-center rounded p-3">
+                  <div class="rounded p-4">
+                    <h6>새벽 기도회</h6>
+                    <p>화-토 오전 6시 Zoom</p>
+                  </div>
+                </a>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-6 wow fadeIn" data-wow-delay="0.5s">
+            <h1 class="mb-4">비전 선언문</h1>
+            <p><i class="fa fa-check text-primary me-3"></i>우리는 하나님 나라의 신앙과 생각과 이상을 품고 세상을 변화시키는 교회입니다.</p>
+            <p><i class="fa fa-check text-primary me-3"></i>우리는 세상에 감동을 주고 영향을 끼치는 평신도 선교사들을 파송하는 선교적 교회입니다.</p>
+            <p><i class="fa fa-check text-primary me-3"></i>우리는 지성과 영성을 겸비한 그리스도인 리더를 키우는 교회입니다.</p>
+            <p><i class="fa fa-check text-primary me-3"></i>우리는 이 이상을 실현하기 위해 훈련 받는 제자 공동체입니다.</p>
+            <p><i class="fa fa-check text-primary me-3"></i>우리는 하나님 안의 한 지체로서 가족 공동체를 세워 가는 교회입니다.</p>
+            <a class="btn btn-primary py-3 px-5 mt-3" href="https://us02web.zoom.us/j/89486134981#success" target="_blank">
+              새벽 기도회 Zoom (passwd: 233534)
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pastor Section -->
+  <div id="pastor-section" class="container-xxl py-5">
+    <div class="container">
+      <div class="bg-light rounded p-3">
+        <div class="bg-white rounded p-4" style="border: 1px dashed rgba(0, 185, 142, .3)">
+          <div class="row g-5 align-items-center">
+            <div class="col-lg-4 wow fadeIn" data-wow-delay="0.1s">
+              <img class="img-fluid rounded w-100" src="https://images.squarespace-cdn.com/content/v1/6732bd65ccc0e358adb9002a/070f1267-bdb0-4d12-ba81-6d579b83fe92/photo_Kim.jpg" alt="Pastor 김성원" />
+            </div>
+            <div class="col-lg-8 wow fadeIn" data-wow-delay="0.5s">
+              <h1 class="mb-3">김성원 목사</h1>
+              <p class="mb-3">
+                저는 원래 엄밀한 증명과 정교한 계산을 추구하던 수학도였습니다. 그런데 유학생활 중 친구들을 따라 갔던 이민교회에서 갑자기 예수님을 알고 성경을 읽게 되었습니다. 추상적이고 불변하는 형식적 진리를 탐구하던 저에게 성경은 영원하고 초월적이면서도 인격적인, 전혀 새로운 진리의 세계를 열어 주었습니다.
+              </p>
+              <p>
+                신앙을 갖게 된 후 저의 한결같은 관심은, 현대 지성인들에게 예수님의 복음을 효과적으로 전하는 것입니다. 지식과 정보가 넘치는 이 시대이지만, 예수님이 1세기 로마제국의 유대 지방에서 십자가에 죽으시고 부활하신 역사, 목적, 의미를 대중에게 정확히 알려 주는 자료는 의외로 빈약합니다.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Contact Section -->
+  <div class="container-xxl py-5">
+    <div class="container">
+      <div class="text-center mx-auto mb-5 wow fadeInUp" data-wow-delay="0.1s" style="max-width: 600px;">
+        <h1 class="mb-3">Contact Us</h1>
+        <p>8108 54th Ave. College Park, MD 20740</p>
+      </div>
+      <div class="row g-4 justify-content-center">
+        <div class="col-lg-6 text-center wow fadeIn" data-wow-delay="0.5s">
+          <div class="d-flex flex-wrap justify-content-center gap-3">
+            <a href="https://www.uchurchmd.org/" class="btn btn-primary py-3 px-4" target="_blank">
+              <i class="fab fa-instagram me-2"></i>인스타그램
+            </a>
+            <a href="#" class="btn btn-secondary py-3 px-4" onclick="copyEmailToClipboard(); return false;">
+              <i class="fa fa-envelope me-2"></i>이메일
+            </a>
+            <a class="btn btn-primary py-3 px-4" href="https://open.kakao.com/o/g3B2xVwf" target="_blank">
+              카카오톡 오픈채팅
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- Chat Toggle Button -->
   <div id="chat-toggle">
@@ -52,10 +255,87 @@
       </div>
     </div>
   </div>
-{% endblock %}
 
-{% block scripts %}
-  {{ super() }}
+  <!-- Socket.IO Client Script -->
   <script src="https://cdn.socket.io/4.4.1/socket.io.min.js"></script>
-  <script src="/static/js/chat.js"></script>
+  <script>
+    var socket;
+    var userChatHistory = [];
+
+    function loadUserChatHistory() {
+      var stored = localStorage.getItem('user_chat_history');
+      if (stored) {
+        try {
+          userChatHistory = JSON.parse(stored);
+        } catch(e) {
+          userChatHistory = [];
+        }
+        userChatHistory.forEach(function(message) {
+          appendMessage(message);
+        });
+      }
+    }
+
+    function saveUserChatHistory() {
+      localStorage.setItem('user_chat_history', JSON.stringify(userChatHistory));
+    }
+
+    function appendMessage(data) {
+      var chatMessages = document.getElementById("chat-messages");
+      var newMessage = document.createElement("div");
+      newMessage.textContent = data.sender + ": " + data.msg;
+      chatMessages.appendChild(newMessage);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    document.getElementById("chat-toggle").addEventListener("click", function() {
+      var popup = document.getElementById("chat-popup");
+      popup.style.display = (popup.style.display === "none" || popup.style.display === "") ? "block" : "none";
+    });
+
+    document.getElementById("chat-close").addEventListener("click", function() {
+      document.getElementById("chat-popup").style.display = "none";
+    });
+
+    document.getElementById("prechat-form").addEventListener("submit", function(e) {
+      e.preventDefault();
+      var name = document.getElementById("userName").value.trim();
+      var email = document.getElementById("userEmail").value.trim();
+      var phone = document.getElementById("userPhone").value.trim();
+      if (!name || !email || !phone) {
+        alert("Please fill in all fields.");
+        return;
+      }
+      document.getElementById("prechat-form-container").style.display = "none";
+      document.getElementById("chat-widget").style.display = "block";
+      socket = io({ query: 'user_type=user&name=' + encodeURIComponent(name) +
+                              '&email=' + encodeURIComponent(email) +
+                              '&phone=' + encodeURIComponent(phone) });
+      socket.on('connect', function() {
+        console.log('Connected to live chat as ' + name);
+      });
+      socket.on('chat_message', function(data) {
+        data.sender = data.sender || name;
+        userChatHistory.push(data);
+        saveUserChatHistory();
+        appendMessage(data);
+      });
+      socket.on('pastor_status', function(data) {
+        var statusDot = document.getElementById("pastor-status-dot");
+        statusDot.style.backgroundColor = (data.status === 'online') ? 'green' : 'red';
+        statusDot.style.display = 'inline-block';
+      });
+      loadUserChatHistory();
+    });
+
+    function sendMessage() {
+      var input = document.getElementById("chatInput");
+      var message = input.value.trim();
+      if (message && socket) {
+        var data = { msg: message };
+        socket.emit('chat_message', data);
+        input.value = '';
+      }
+    }
+  </script>
 {% endblock %}
