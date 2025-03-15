@@ -1,23 +1,17 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 
-{% block title %}Page Not Found - 404{% endblock title %}
+{% block title %}
+  Page Not Found - 404
+{% endblock %}
 
 {% block content %}
-<div class="container text-center my-5">
-    <!-- Optional: Larger, more eye-catching heading -->
+  <div class="container text-center my-5">
     <h1 class="display-1 fw-bold text-danger">404</h1>
     <h2 class="mb-4">죄송합니다. 찾으시는 페이지를 찾을 수 없습니다.</h2>
-    <br>
-    <br>
-    <br>
     <p class="mb-4">
-        요청하신 페이지가 존재하지 않거나 삭제되었습니다.
-        <br/>URL을 다시 확인해 주세요.
+      요청하신 페이지가 존재하지 않거나 삭제되었습니다.<br />
+      URL을 다시 확인해 주세요.
     </p>
-    <br>
-    <br>
-    <br>
-    <br>
     <a href="/" class="btn btn-primary btn-lg">홈으로 돌아가기</a>
-</div>
-{% endblock content %}
+  </div>
+{% endblock %}

@@ -1,15 +1,16 @@
+# app/exceptions.py
 from typing import Optional, Dict, Any
 from flask import Flask, jsonify, render_template
 
 
 class InvalidUsage(Exception):
     """
-    Exception for invalid usage or unauthorized access.
+    Custom exception class for handling invalid usage scenarios.
 
     Attributes:
-        message (str): Explanation of the error.
-        status_code (int): HTTP status code to return.
-        payload (Optional[Dict[str, Any]]): Additional data to include in the response.
+        message: Description of the error.
+        status_code: HTTP status code for the error.
+        payload: Optional extra data to include in the response.
     """
 
     status_code: int = 400
@@ -27,24 +28,14 @@ class InvalidUsage(Exception):
         self.payload = payload
 
     def to_dict(self) -> Dict[str, Any]:
-        """
-        Convert the exception details to a dictionary for JSON responses.
-
-        Returns:
-            Dict[str, Any]: A dictionary containing the error message and any additional payload.
-        """
-        rv: Dict[str, Any] = dict(self.payload or ())
+        """Convert the exception details into a dictionary."""
+        rv: Dict[str, Any] = dict(self.payload or {})
         rv["error"] = self.message
         return rv
 
 
 def register_error_handlers(app: Flask) -> None:
-    """
-    Register global error handlers for the Flask app.
-
-    Args:
-        app (Flask): The Flask application instance.
-    """
+    """Register custom error handlers with the Flask application."""
 
     @app.errorhandler(InvalidUsage)
     def handle_invalid_usage(error: InvalidUsage):
@@ -60,7 +51,6 @@ def register_error_handlers(app: Flask) -> None:
     def forbidden_error(error):
         return render_template("404.html"), 404
 
-    # Do not change the 404 error handler
     @app.errorhandler(404)
     def not_found_error(error):
         return render_template("404.html"), 404

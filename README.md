@@ -1,82 +1,113 @@
-# University Church in Maryland Official Website
+# University Church Web Application
 
-**Live Site**: [https://www.uchurchmd.org/](https://www.uchurchmd.org/)  
-[![License](https://img.shields.io/badge/License-Proprietary-blue.svg)](LICENSE)
+This project is a Flask-based web application for University Church, designed to facilitate communication, resource sharing, and community engagement within the church community. It provides an easy-to-use platform with robust features tailored for both general users and administrators.
 
----
+## Features
 
-## 🌟 Highlights  
-- **Modern Dependency Management**: Fully powered by Poetry for seamless package handling.  
-- **Production-Ready Architecture**: Deployed on GCP Compute Engine with HTTPS/SSL.  
-- **Security First**: Rate-limited authentication, encrypted file uploads, and IP blocking.  
+- **User Authentication**: Secure login system with built-in protection against excessive login attempts and brute-force attacks.
+- **Content Management**: Admin users can easily create, read, update, and delete posts, facilitating seamless content dissemination.
+- **File Management**: Securely upload, list, download, and delete various document types with enforced file validation.
+- **Real-time Chat**: Integrated live chat functionality enabling real-time communication between users and administrators via WebSockets (Socket.IO).
+- **RESTful API Endpoints**: Accessible JSON APIs for external integration and data retrieval of uploaded file information.
+- **SEO and Accessibility**: Structured metadata, optimized page structures, and responsive designs for improved SEO and accessibility.
 
----
+## Technologies Used
 
-## 🛠 Tech Stack  
-**Backend**: Flask (Python 3.10+) | **Database**: PostgreSQL  
-**Frontend**: HTML5, CSS3, Vanilla JS | **Infra**: GCP Compute Engine, Nginx, Certbot  
+| Component            | Technology                             | Notes                                                   |
+|----------------------|----------------------------------------|---------------------------------------------------------|
+| Web Framework        | Flask                                  | Lightweight, flexible Python web framework              |
+| Dependency Management| Poetry                                 | Simplified dependency management with built-in tooling  |
+| Database             | SQLAlchemy (with Flask-Migrate)        | Robust ORM with easy schema migration capabilities      |
+| Real-time Features   | Flask-SocketIO                         | Efficient WebSocket support for real-time communication |
+| Cloud Platform       | Google Cloud Platform (GCP)            | Hosting via App Engine and Cloud SQL for databases      |
+| Security             | Werkzeug Security, Flask sessions      | Secure password hashing, session handling, IP blocking  |
+| Front-End            | Bootstrap, FontAwesome, Custom CSS     | Responsive UI with rich visual elements                 |
+| Code Quality         | Black, flake8, isort                    | Automated formatting, linting, and import sorting       |
+| Debugging            | Poetry built-in tools                  | Simplified debugging and dependency resolution          |
 
----
+## Project Structure Overview
 
-## 🚀 Quick Start with Poetry  
+- `routes/`: Flask routes and view logic handling HTTP requests.
+- `sockets/`: Handlers for managing real-time Socket.IO communications.
+- `models.py`: Definition of database models (`PDFFile`, `Post`) using SQLAlchemy.
+- `utils.py`: Utility functions for validation and general-purpose helpers.
+- `config.py`: Centralized configuration management utilizing environment variables.
+- `decorators.py`: Security and authentication decorators for route protection.
+- `exceptions.py`: Custom exception handling for robust error management.
+- `templates/`: HTML templates powered by Jinja2 templating engine.
+- `static/`: CSS, JavaScript, and other static assets.
+- `migration/`: Database migration scripts managed by Alembic.
 
-### 1. Clone & Install  
-```shell
-git clone https://github.com/sueun-dev/university-church-in-maryland.git
-cd official-website
-poetry install  # Installs all dependencies  
+## Getting Started
+
+### Prerequisites
+
+- Python 3.8 or higher
+- Google Cloud Platform account (App Engine and Cloud SQL)
+- PostgreSQL/MySQL for Cloud SQL (recommended)
+- Poetry (for dependency management)
+
+### Installation
+
+Clone the repository:
+```bash
+git clone <repository-url>
+cd <project-directory>
 ```
 
-### 2. Configure Environment  
-Create a `.env` file in the root directory:
-```env
-DATABASE_URL="postgresql://user:password@localhost:5432/kusa_db"
-SECRET_KEY="your-random-secret-key"  # Used for Flask session encryption
+Install dependencies using Poetry:
+```bash
+poetry install
 ```
 
-### 3. Run the App  
-```shell
-poetry shell    # Activates the virtual environment
-python run.py   # Starts the Flask dev server
+Activate the Poetry virtual environment:
+```bash
+poetry shell
 ```
 
----
+Set up environment variables:
+```bash
+cp .env.example .env
+# Update .env with your actual environment variables
+```
 
-## 🔒 Security Features  
-- **Brute-Force Protection**: Blocks IPs after 5 failed login attempts (24-hour cooldown).  
-- **File Upload Safeguards**:  
-  - Configurable size limits via `MAX_FILE_SIZE` in `.env`.  
-  - Virus scanning for uploaded files (optional GCP integration).  
+Initialize and migrate the database:
+```bash
+flask db init
+flask db migrate
+flask db upgrade
+```
 
----
+Run the application locally:
+```bash
+flask run
+```
 
-## ☁️ Deployment Guide  
-1. **GCP Compute Engine Setup**:  
-   - Ubuntu 22.04 LTS instance with firewall rules allowing HTTPS/HTTP.  
-2. **HTTPS Configuration**:   
-   ```shell
-   sudo certbot --nginx -d uchurchmd.org -d www.uchurchmd.org
+## Deploying to Google Cloud Platform (GCP)
+
+1. **Configure GCP**:
+   - Create a new App Engine application in your GCP project.
+   - Set up a Cloud SQL instance and configure it to connect with your Flask application.
+
+2. **Deploy the application**:
+   ```bash
+   gcloud app deploy
    ```
-3. **Run as Background Service**:  
-   ```shell
-   nohup poetry run python run.py &  # Persistent execution
-   ```
+
+3. **Monitoring & Logging**:
+   - Utilize Google Cloud Monitoring and Logging to track application performance and troubleshoot issues.
+
+## Contributing
+
+Contributions are welcome and encouraged! Feel free to open issues for bugs, suggest improvements, or submit pull requests to enhance this project.
+
+## License
+
+This project is open source and freely available for personal or organizational use under the MIT License.
+
+Developed by [Sueun Cho](https://github.com/sueun-dev).
 
 ---
 
-## 📜 License  
-Free to use
-
----
-
-## Developer
-**Developer**: Sueun Cho
-
-**E-mail**:  sueun.dev@gmail.com
-
-**LinkedIn**: [LinkedIn](https://www.linkedin.com/in/sueun-cho-625262252/)
-
----
-
-_Last Updated: February 05, 2025_
+_Last Updated: March 15, 2025_
 

@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% block title %}Pastor Live Chat{% endblock %}
+
+{% block css %}
+  {{ super() }}
+  <link href="/static/css/pastor_chat.css" rel="stylesheet" />
+{% endblock %}
+
+{% block content %}
+<div class="chat-wrapper">
+  <!-- Connected Users List -->
+  <div class="user-list">
+    <h4>Connected Users</h4>
+    <ul id="user-items" class="user-items"></ul>
+  </div>
+  <!-- Chat Area -->
+  <div class="chat-container">
+    <div id="chat-header" class="chat-header">
+      <h4 id="chat-user-name">Select a user to chat</h4>
+      <p id="chat-user-info"></p>
+    </div>
+    <div id="chat-window" class="chat-window">
+      <!-- Chat messages will appear here -->
+    </div>
+    <div id="chat-input-container" class="chat-input-container">
+      <input type="text" id="pastorChatInput" placeholder="Type your message..." />
+      <button onclick="sendPastorMessage()">Send</button>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+  {{ super() }}
+  <script src="https://cdn.socket.io/4.4.1/socket.io.min.js"></script>
+  <script src="/static/js/pastor_chat.js"></script>
+{% endblock %}

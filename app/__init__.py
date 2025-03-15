@@ -1,48 +1,48 @@
+# app/__init__.py
 import os
+import logging
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
+from flask_socketio import SocketIO
 from .config import Config
 from .exceptions import register_error_handlers
 
-db: SQLAlchemy = SQLAlchemy()
-migrate: Migrate = Migrate()
-
+# Initialize extensions once and reuse them throughout the app.
+db = SQLAlchemy()
+migrate = Migrate()
+socketio = SocketIO(cors_allowed_origins="*")  # Adjust CORS settings for production
 
 def create_app() -> Flask:
     """
-    Factory function to create and configure the Flask application.
-
-    This function sets up the application configuration, initializes the database
-    and migration utilities, registers blueprints, and configures global error handlers.
-
-    Returns:
-        Flask: A fully configured Flask application instance.
+    Application factory that creates and configures the Flask app instance.
     """
-    project_root: str = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-    app: Flask = Flask(
+    project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+    app = Flask(
         __name__,
         template_folder=os.path.join(project_root, "templates"),
         static_folder=os.path.join(project_root, "static"),
     )
     app.config.from_object(Config)
 
-    # Initialize extensions
+    # Initialize extensions with the app
     db.init_app(app)
     migrate.init_app(app, db)
+    socketio.init_app(app)
 
-    # Register blueprints
-    from .routes.main import (
-        bp as main_bp,
-    )  # Local import to avoid circular dependencies
+    # Register blueprints (e.g., main routes)
+    from .routes import main as main_blueprint
+    app.register_blueprint(main_blueprint.bp)
 
-    app.register_blueprint(main_bp)
+    # Register SocketIO events (for live chat functionality)
+    from .sockets.livechat_manager import livechat_manager
+    livechat_manager.register_events(socketio)
 
-    # Register global error handlers
+    # Register custom error handlers
     register_error_handlers(app)
 
-    print("Template folder:", app.template_folder)
+    # Log configuration details
+    logger = logging.getLogger(__name__)
+    logger.info("App created with template folder: %s", app.template_folder)
+
     return app
-
-
-__all__ = ["db", "migrate", "create_app"]

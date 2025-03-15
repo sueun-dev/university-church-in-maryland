@@ -1,0 +1,109 @@
+/* 게시글 영역 */
+.post-card {
+    margin-bottom: 1rem;
+  }
+  
+  /* Chat widget styles */
+  #chat-toggle {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: #007bff;
+    color: #fff;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    z-index: 2000;
+  }
+  
+  #chat-popup {
+    position: fixed;
+    bottom: 90px;
+    right: 20px;
+    width: 300px;
+    background: #fff;
+    border: 1px solid #ccc;
+    padding: 10px;
+    display: none;
+    z-index: 2000;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  }
+  
+  #chat-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  
+  #chat-header h4 {
+    margin: 0;
+  }
+  
+  #pastor-indicator {
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+  }
+  
+  #pastor-status-dot {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: red; /* 기본 offline */
+    margin-left: 5px;
+  }
+  
+  #chat-close {
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+  }
+  
+  /* Pre-chat 폼 */
+  #prechat-form-container form {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  #prechat-form-container input {
+    margin-bottom: 10px;
+    padding: 8px;
+    font-size: 14px;
+  }
+  
+  #prechat-form-container button {
+    padding: 10px;
+    font-size: 14px;
+    cursor: pointer;
+  }
+  
+  /* 채팅 위젯 영역 (Pre-chat 완료 후 표시) */
+  #chat-widget {
+    display: none;
+  }
+  
+  #chat-messages {
+    height: 200px;
+    overflow-y: auto;
+    border: 1px solid #ddd;
+    padding: 5px;
+    margin-bottom: 10px;
+  }
+  
+  #chat-widget input {
+    width: 80%;
+    padding: 8px;
+  }
+  
+  #chat-widget button {
+    padding: 8px;
+    cursor: pointer;
+  }
+  

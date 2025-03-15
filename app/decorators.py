@@ -1,48 +1,28 @@
 import time
 from functools import wraps
 from typing import Callable, Any, Dict, Tuple
-from flask import request, Response
+from flask import request, session, redirect, url_for
 from werkzeug.security import check_password_hash
 from .config import Config
-from .exceptions import InvalidUsage
 
-# In-memory login attempt tracker (for demonstration purposes)
+# 로그인 시도 추적 (데모용)
 login_attempts: Dict[str, Tuple[int, float]] = {}
 
 
 def check_auth(username: str, password: str) -> bool:
-    """
-    Validate credentials against the configuration.
-    """
+    """자격 증명 확인"""
     return username == Config.USERNAME and check_password_hash(
         Config.UPLOAD_PASSWORD_HASH, password
     )
 
 
-def authenticate() -> Response:
-    """
-    Generate a 401 response that prompts for authentication.
-    """
-    html_response = """
-    <html>
-        <body>
-            <h2>Authentication Required</h2>
-            <p>Please enter the correct username and password.</p>
-            <button onclick="window.location.href='/'">Go to Home</button>
-        </body>
-    </html>
-    """
-    return Response(
-        html_response,
-        status=401,
-        headers={"WWW-Authenticate": 'Basic realm="Login Required"'},
-    )
+def authenticate():
+    """인증되지 않은 요청은 로그인 페이지로 리디렉션"""
+    return redirect(url_for("main.login", next=request.url))
 
 
 def is_ip_blocked(ip: str) -> bool:
-    """
-    Check if an IP address is blocked based on failed login attempts.
-    """
+    """IP 차단 여부 확인"""
     if ip in login_attempts:
         attempts, last_attempt = login_attempts[ip]
         if (
@@ -54,9 +34,7 @@ def is_ip_blocked(ip: str) -> bool:
 
 
 def register_failed_attempt(ip: str) -> int:
-    """
-    Record a failed login attempt for a given IP address and return the remaining attempts.
-    """
+    """실패한 로그인 시도 기록"""
     if ip in login_attempts:
         attempts, _ = login_attempts[ip]
         login_attempts[ip] = (attempts + 1, time.time())
@@ -67,41 +45,15 @@ def register_failed_attempt(ip: str) -> int:
 
 
 def requires_auth(force_reauth: bool = False) -> Callable:
-    """
-    Decorator to enforce basic authentication on a Flask view.
-    """
+    """인증 필요 데코레이터"""
 
     def decorator(f: Callable) -> Callable:
         @wraps(f)
-        def decorated(*args: Any, **kwargs: Any) -> Any:
-            ip: str = request.remote_addr  # type: ignore
-            if is_ip_blocked(ip):
-                raise InvalidUsage(
-                    "Your IP is blocked due to too many failed login attempts.",
-                    status_code=403,
-                )
-            auth = request.authorization
-            if (
-                not auth
-                or auth.username is None
-                or auth.password is None
-                or not check_auth(auth.username, auth.password)
-                or force_reauth
-            ):
-                register_failed_attempt(ip)
-                return authenticate()
-            return f(*args, **kwargs)
+        def wrapped(*args: Any, **kwargs: Any) -> Any:
+            if session.get("is_pastor"):
+                return f(*args, **kwargs)
+            return redirect(url_for("main.login", next=request.url))
 
-        return decorated
+        return wrapped
 
     return decorator
-
-
-__all__ = [
-    "check_auth",
-    "authenticate",
-    "is_ip_blocked",
-    "register_failed_attempt",
-    "requires_auth",
-    "login_attempts",
-]

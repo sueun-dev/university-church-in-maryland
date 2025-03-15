@@ -12,23 +12,11 @@
     <!-- SEO Meta Tags -->
     <meta name="keywords"
       content="{% block meta_keywords %}
-        
-        
-        
         유니버시티 교회, University Church, 메릴랜드 대학, 신앙 공동체, 교회, 예배, 성경 공부
-
-
-
       {% endblock %}" />
     <meta name="description"
       content="{% block meta_description %}
-        
-        
-        
         유니버시티 교회 공식 홈페이지. 50여년간 메릴랜드 대학 가족과 지역 이민사회가 함께 세워 온 신앙 공동체.
-
-
-
       {% endblock %}" />
 
     <!-- Open Graph Meta Tags -->
@@ -43,34 +31,39 @@
     <link href="/static/lib/animate/animate.min.css" rel="stylesheet" />
     <link href="/static/lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet" />
     <link href="/static/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="/static/css/custom_styles.css" rel="stylesheet" />
 
-    <!-- Additional Page-Specific CSS -->
     {% block css %}
-
     {% endblock %}
   </head>
   <body>
     <!-- Navbar Start -->
-    <!-- Navbar Start -->
     <header>
       <div class="container-fluid nav-bar bg-transparent">
         <nav class="navbar navbar-expand-lg bg-white navbar-light py-0 px-4">
-          <a href="/" class="navbar-brand d-flex align-items-center text-center">
+          <a href="{{ url_for('main.index') }}" class="navbar-brand d-flex align-items-center text-center">
             <div class="icon p-1 me-4">
               <img class="img-fluid" src="https://images.squarespace-cdn.com/content/v1/6732bd65ccc0e358adb9002a/59243f07-253d-4cf4-b918-60bb34cb810b/ucmlogo.png%3Fformat=1500w" alt="Church Logo" style="width: 50px; height: 50px;" />
             </div>
-            <!-- Desktop and tablet view -->
             <h1 class="m-0 text-primary d-none d-md-block" style="font-size: 18px;">University Church</h1>
-            <!-- Mobile view -->
             <h1 class="m-0 text-primary d-block d-md-none" style="font-size: 18px;">Uni Church</h1>
           </a>
-
-          <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarCollapse"><span class="navbar-toggler-icon"></span></button>
+          <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+            <span class="navbar-toggler-icon"></span>
+          </button>
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <div class="navbar-nav ms-auto">
-              <a href="/" class="nav-item nav-link {% if active_page == 'home' %}active{% endif %}">Home</a>
+              <a href="{{ url_for('main.index') }}" class="nav-item nav-link {% if active_page == 'home' %}active{% endif %}">Home</a>
               <a href="/#pastor-section" class="nav-item nav-link">About</a>
-              <a href="/upload" class="nav-item nav-link {% if active_page == 'upload' %}active{% endif %}">자료공유</a>
+              <!-- 게시글 링크 수정: read_posts 엔드포인트 사용 -->
+              <a href="{{ url_for('main.read_posts') }}" class="nav-item nav-link {% if active_page == 'read' %}active{% endif %}">게시글</a>
+              <!-- 자료공유 링크: upload_file 엔드포인트 사용 -->
+              <a href="{{ url_for('main.upload_file') }}" class="nav-item nav-link {% if active_page == 'upload' %}active{% endif %}">자료공유</a>
+              {% if session.get('is_pastor') %}
+                <a href="{{ url_for('main.logout') }}" class="nav-item nav-link">Logout</a>
+              {% else %}
+                <a href="{{ url_for('main.login', next=request.url) }}" class="nav-item nav-link">관리자 로그인</a>
+              {% endif %}
               <a href="https://www.youtube.com/@uchurchmd" class="btn btn-outline-red">UChurchMD TV</a>
             </div>
           </div>
@@ -79,12 +72,9 @@
     </header>
     <!-- Navbar End -->
 
-    <!-- Navbar End -->
-
     <!-- Main Content -->
     <main>
       {% block content %}
-
       {% endblock %}
     </main>
 
@@ -102,8 +92,12 @@
                 <i class="fa fa-envelope me-3"></i>info@uchurchmd.org
               </p>
               <div class="d-flex pt-2">
-                <a class="btn btn-outline-light btn-social" href="https://www.instagram.com/uchurchmd" target="_blank"><i class="fab fa-instagram"></i></a>
-                <a class="btn btn-outline-light btn-social" href="https://open.kakao.com/o/yourlink" target="_blank">KakaoTalk</a>
+                <a class="btn btn-outline-light btn-social" href="https://www.instagram.com/uchurchmd" target="_blank">
+                  <i class="fab fa-instagram"></i>
+                </a>
+                <a class="btn btn-outline-light btn-social" href="https://open.kakao.com/o/yourlink" target="_blank">
+                  KakaoTalk
+                </a>
               </div>
             </div>
             <div class="col-lg-4 col-md-6">
@@ -138,5 +132,7 @@
     <script src="/static/lib/waypoints/waypoints.min.js"></script>
     <script src="/static/lib/owlcarousel/owl.carousel.min.js"></script>
     <script src="/static/js/main.js"></script>
+    {% block scripts %}
+    {% endblock %}
   </body>
 </html>
