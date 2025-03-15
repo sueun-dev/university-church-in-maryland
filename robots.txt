@@ -1,6 +1,4 @@
 User-agent: *
-Allow: /
+Disallow:
 
-Host: www.uchurchmd.org
-
-Sitemap: https://www.uchurchmd.org/sitemap.xml
+Sitemap: https://uchurchmd.org/sitemap.xml

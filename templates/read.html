@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+{% set active_page = 'read' %}
+{% block title %}게시글 및 채팅{% endblock %}
+
+{% block css %}
+  {{ super() }}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/read.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+  <h1 class="mb-4">게시글</h1>
+  
+  {% if is_pastor %}
+  <!-- Pastor: Post Registration Form -->
+  <div class="card mb-4">
+    <div class="card-header">새 게시글 작성</div>
+    <div class="card-body">
+      <form method="POST" action="{{ url_for('main.read_posts') }}">
+        <div class="mb-3">
+          <label for="title" class="form-label">제목</label>
+          <input type="text" name="title" id="title" class="form-control" required>
+        </div>
+        <div class="mb-3">
+          <label for="content" class="form-label">내용</label>
+          <textarea name="content" id="content" class="form-control" rows="5" required></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">게시글 등록</button>
+      </form>
+    </div>
+  </div>
+  {% else %}
+    <div class="alert alert-info">
+      게시글 등록 및 삭제는 관리자 계정으로 로그인 후 이용 가능합니다.
+      <a href="{{ url_for('main.login', next=request.url) }}" class="alert-link">로그인하기</a>
+    </div>
+  {% endif %}
+  
+  <!-- Posts List -->
+  <h2>기존 게시글</h2>
+  {% if posts %}
+    {% for post in posts %}
+      <div class="card mb-3">
+        <div class="card-body">
+          <h5 class="card-title">{{ post.title }}</h5>
+          <p class="card-text">{{ post.content }}</p>
+          <p class="card-text">
+            <small class="text-muted">작성일: {{ post.created_at.strftime('%Y-%m-%d %H:%M') }}</small>
+          </p>
+          {% if is_pastor %}
+          <!-- Delete button (only for pastors) -->
+          <form method="POST" action="{{ url_for('main.delete_post', post_id=post.id) }}"
+                onsubmit="return confirm('이 게시글을 삭제하시겠습니까?');">
+            <button type="submit" class="btn btn-danger btn-sm">삭제</button>
+          </form>
+          {% endif %}
+        </div>
+      </div>
+    {% endfor %}
+  {% else %}
+    <p>아직 등록된 게시글이 없습니다.</p>
+  {% endif %}
+</div>
+
+<!-- Chat Widget -->
+<div id="chat-toggle">
+  <i class="fa fa-comments" aria-hidden="true"></i>
+</div>
+<div id="chat-popup">
+  <div id="chat-header">
+    <h4>Live Chat</h4>
+    <div id="pastor-indicator">
+      Pastor:
+      <span id="pastor-status-dot"></span>
+    </div>
+    <button id="chat-close">&times;</button>
+  </div>
+  <div id="chat-content">
+    <!-- Pre-chat form -->
+    <div id="prechat-form-container">
+      <form id="prechat-form">
+        <input type="text" id="userName" placeholder="Your Name" required />
+        <input type="email" id="userEmail" placeholder="Your Email" required />
+        <input type="tel" id="userPhone" placeholder="Your Phone" required />
+        <button type="submit">Start Chat</button>
+      </form>
+    </div>
+    <!-- Chat widget messages -->
+    <div id="chat-widget">
+      <div id="chat-messages"></div>
+      <input type="text" id="chatInput" placeholder="Type your message..." />
+      <button onclick="sendMessage()">Send</button>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+  <script src="https://cdn.socket.io/4.4.1/socket.io.min.js"></script>
+  <script src="{{ url_for('static', filename='js/read.js') }}"></script>
+{% endblock %}
