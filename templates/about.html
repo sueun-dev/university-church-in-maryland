@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% set active_page = 'about' %}
+
+{% block title %}About Us - University Church{% endblock %}
+
+{% block content %}
+<!-- Church Introduction -->
+<div class="container py-5">
+  <h2 class="text-center mb-4">교회 소개</h2>
+
+  <!-- Vision Statement -->
+  <div class="bg-light rounded p-4 mb-5">
+    <h3 class="mb-4">비전 선언문</h3>
+    <ul class="list-unstyled">
+      <li class="mb-3"><i class="fa fa-check text-primary me-2"></i>우리는 하나님 나라의 신앙과 생각과 이상을 품고 세상을 변화시키는 교회입니다.</li>
+      <li class="mb-3"><i class="fa fa-check text-primary me-2"></i>우리는 세상에 감동을 주고 영향을 끼치는 평신도 선교사들을 파송하는 선교적 교회입니다.</li>
+      <li class="mb-3"><i class="fa fa-check text-primary me-2"></i>우리는 지성과 영성을 겸비한 그리스도인 리더를 키우는 교회입니다.</li>
+      <li class="mb-3"><i class="fa fa-check text-primary me-2"></i>우리는 이 이상을 실현하기 위해 훈련 받는 제자 공동체입니다.</li>
+      <li><i class="fa fa-check text-primary me-2"></i>우리는 하나님 안의 한 지체로서 가족 공동체를 세워 가는 교회입니다.</li>
+    </ul>
+  </div>
+
+  <!-- Pastor Introduction (without picture) -->
+  <div class="bg-white rounded p-4 border">
+    <h3 class="mb-4">담임 목사 소개</h3>
+    <h4>김성원 목사</h4>
+    <p>
+      저는 원래 엄밀한 증명과 정교한 계산을 추구하던 수학도였습니다. 그런데 유학생활 중 친구들을 따라 갔던 이민교회에서 갑자기 예수님을 알고 성경을 읽게 되었습니다. 추상적이고 불변하는 형식적 진리를 탐구하던 저에게 성경은 영원하고 초월적이면서도 인격적인, 전혀 새로운 진리의 세계를 열어 주었습니다.
+    </p>
+    <p>
+      신앙을 갖게 된 후 저의 한결같은 관심은, 현대 지성인들에게 예수님의 복음을 효과적으로 전하는 것입니다. 지식과 정보가 넘치는 이 시대이지만, 예수님이 1세기 로마제국의 유대 지방에서 십자가에 죽으시고 부활하신 역사, 목적, 의미를 대중에게 정확히 알려 주는 자료는 의외로 빈약합니다.
+    </p>
+  </div>
+</div>
+{% endblock %}

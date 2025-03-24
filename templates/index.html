@@ -126,78 +126,69 @@
   </div>
 
   <!-- Vision Section -->
-  <div class="container">
-    <div class="bg-light rounded p-4">
-      <div class="bg-white rounded p-4" style="border: 1px dashed rgba(0, 185, 142, .3)">
-        <div class="row g-5 align-items-center">
-          <div class="col-lg-6 wow fadeIn" data-wow-delay="0.1s">
-            <h1 class="mb-4">예배 및 모임 시간</h1>
-            <div class="row g-4">
-              <div class="col-lg-4 col-sm-6 wow fadeInUp" data-wow-delay="0.1s">
-                <a class="cat-item d-block bg-light text-center rounded p-3">
-                  <div class="rounded p-4">
-                    <h6>주일 예배</h6>
-                    <p>매주 주일 오전 11시</p>
-                  </div>
-                </a>
+<!-- Vision Section -->
+<div class="container py-5">
+  <div class="bg-light rounded p-4">
+    <div class="bg-white rounded p-4 border border-primary border-opacity-25">
+      <div class="row justify-content-center">
+        <div class="col-lg-10 text-center wow fadeIn" data-wow-delay="0.1s">
+          <h1 class="mb-4">예배 및 모임 시간</h1>
+          <div class="row justify-content-center g-4">
+            <div class="col-md-4 col-sm-6 wow fadeInUp" data-wow-delay="0.1s">
+              <div class="bg-light rounded p-4 h-100">
+                <h6>주일 예배</h6>
+                <p>매주 주일 오전 11시</p>
               </div>
-              <div class="col-lg-4 col-sm-6 wow fadeInUp" data-wow-delay="0.3s">
-                <a class="cat-item d-block bg-light text-center rounded p-3">
-                  <div class="rounded p-4">
-                    <h6>성경 공부</h6>
-                    <p>매주 주일 오후 1시</p>
-                  </div>
-                </a>
+            </div>
+            <div class="col-md-4 col-sm-6 wow fadeInUp" data-wow-delay="0.3s">
+              <div class="bg-light rounded p-4 h-100">
+                <h6>성경 공부</h6>
+                <p>매주 주일 오후 1시</p>
               </div>
-              <div class="col-lg-4 col-sm-6 wow fadeInUp" data-wow-delay="0.5s">
-                <a class="cat-item d-block bg-light text-center rounded p-3">
-                  <div class="rounded p-4">
-                    <h6>새벽 기도회</h6>
-                    <p>화-토 오전 6시 Zoom</p>
-                  </div>
-                </a>
+            </div>
+            <div class="col-md-4 col-sm-6 wow fadeInUp" data-wow-delay="0.5s">
+              <div class="bg-light rounded p-4 h-100">
+                <h6>새벽 기도회</h6>
+                <p>화-토 오전 6시 Zoom</p>
               </div>
             </div>
           </div>
-          <div class="col-lg-6 wow fadeIn" data-wow-delay="0.5s">
-            <h1 class="mb-4">비전 선언문</h1>
-            <p><i class="fa fa-check text-primary me-3"></i>우리는 하나님 나라의 신앙과 생각과 이상을 품고 세상을 변화시키는 교회입니다.</p>
-            <p><i class="fa fa-check text-primary me-3"></i>우리는 세상에 감동을 주고 영향을 끼치는 평신도 선교사들을 파송하는 선교적 교회입니다.</p>
-            <p><i class="fa fa-check text-primary me-3"></i>우리는 지성과 영성을 겸비한 그리스도인 리더를 키우는 교회입니다.</p>
-            <p><i class="fa fa-check text-primary me-3"></i>우리는 이 이상을 실현하기 위해 훈련 받는 제자 공동체입니다.</p>
-            <p><i class="fa fa-check text-primary me-3"></i>우리는 하나님 안의 한 지체로서 가족 공동체를 세워 가는 교회입니다.</p>
-            <a class="btn btn-primary py-3 px-5 mt-3" href="https://us02web.zoom.us/j/89486134981#success" target="_blank">
-              새벽 기도회 Zoom (passwd: 233534)
-            </a>
+          <a class="btn btn-primary py-3 px-5 mt-4" href="{{ zoom_url }}" target="_blank">
+            새벽 기도회 Zoom (passwd: 233534)
+          </a>
+          
+          {% if is_pastor %}
+          <!-- Pastor-only Zoom Link Update Form -->
+          <div class="mt-4">
+            <form action="{{ url_for('main.update_zoom_link') }}" method="POST" class="d-flex justify-content-center gap-2">
+              <input type="url" name="zoom_url" class="form-control" style="max-width: 400px;" placeholder="새 Zoom URL 입력" required>
+              <button type="submit" class="btn btn-danger">Zoom 링크 변경</button>
+            </form>
           </div>
+          {% endif %}
+          
         </div>
       </div>
     </div>
   </div>
+</div>
 
-  <!-- Pastor Section -->
-  <div id="pastor-section" class="container-xxl py-5">
-    <div class="container">
-      <div class="bg-light rounded p-3">
-        <div class="bg-white rounded p-4" style="border: 1px dashed rgba(0, 185, 142, .3)">
-          <div class="row g-5 align-items-center">
-            <div class="col-lg-4 wow fadeIn" data-wow-delay="0.1s">
-              <img class="img-fluid rounded w-100" src="https://images.squarespace-cdn.com/content/v1/6732bd65ccc0e358adb9002a/070f1267-bdb0-4d12-ba81-6d579b83fe92/photo_Kim.jpg" alt="Pastor 김성원" />
-            </div>
-            <div class="col-lg-8 wow fadeIn" data-wow-delay="0.5s">
-              <h1 class="mb-3">김성원 목사</h1>
-              <p class="mb-3">
-                저는 원래 엄밀한 증명과 정교한 계산을 추구하던 수학도였습니다. 그런데 유학생활 중 친구들을 따라 갔던 이민교회에서 갑자기 예수님을 알고 성경을 읽게 되었습니다. 추상적이고 불변하는 형식적 진리를 탐구하던 저에게 성경은 영원하고 초월적이면서도 인격적인, 전혀 새로운 진리의 세계를 열어 주었습니다.
-              </p>
-              <p>
-                신앙을 갖게 된 후 저의 한결같은 관심은, 현대 지성인들에게 예수님의 복음을 효과적으로 전하는 것입니다. 지식과 정보가 넘치는 이 시대이지만, 예수님이 1세기 로마제국의 유대 지방에서 십자가에 죽으시고 부활하신 역사, 목적, 의미를 대중에게 정확히 알려 주는 자료는 의외로 빈약합니다.
-              </p>
-            </div>
-          </div>
-        </div>
+<!-- Google Map (Outside Vision Box, Center-Aligned) -->
+<div class="container py-5">
+  <h3 class="text-center mb-4">찾아오는 길</h3>
+  <div class="row justify-content-center">
+    <div class="col-lg-10">
+      <div class="ratio ratio-16x9 border rounded overflow-hidden">
+        <iframe
+          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3095.8017767397194!2d-76.92484532460897!3d38.99069407166233!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89b7c69af59c969b%3A0xe69b939ee8b3c4cc!2s8108%2054th%20Ave%2C%20College%20Park%2C%20MD%2020740!5e0!3m2!1sen!2sus!4v1711279783476!5m2!1sen!2sus"
+          width="600" height="450"
+          style="border:0;"
+          allowfullscreen loading="lazy">
+        </iframe>
       </div>
     </div>
   </div>
+</div>
 
   <!-- Contact Section -->
   <div class="container-xxl py-5">
