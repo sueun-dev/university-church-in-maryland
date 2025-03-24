@@ -1,40 +1,40 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <title>
-      {% block title %}
-        University Church
-      {% endblock %}
-    </title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<head>
+  <meta charset="utf-8" />
+  <title>{% block title %}University Church{% endblock %}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <!-- SEO Meta Tags -->
-    <meta name="keywords"
-      content="{% block meta_keywords %}
-        유니버시티 교회, University Church, 메릴랜드 대학, 신앙 공동체, 교회, 예배, 성경 공부
-      {% endblock %}" />
-    <meta name="description"
-      content="{% block meta_description %}
-        유니버시티 교회 공식 홈페이지. 50여년간 메릴랜드 대학 가족과 지역 이민사회가 함께 세워 온 신앙 공동체.
-      {% endblock %}" />
+  <!-- SEO Meta Tags -->
+  <meta name="keywords" content="{% block meta_keywords %}유니버시티 교회, University Church, 메릴랜드 대학, 신앙 공동체, 교회, 예배, 성경 공부{% endblock %}" />
+  <meta name="description" content="{% block meta_description %}유니버시티 교회 공식 홈페이지. 50여년간 메릴랜드 대학 가족과 지역 이민사회가 함께 세워 온 신앙 공동체.{% endblock %}" />
 
-    <!-- Open Graph Meta Tags -->
-    <meta property="og:image" content="https://images.squarespace-cdn.com/content/v1/6732bd65ccc0e358adb9002a/59243f07-253d-4cf4-b918-60bb34cb810b/ucmlogo.png%3Fformat=1500w" />
+  <!-- Open Graph Meta Tags -->
+  <meta property="og:image" content="https://images.squarespace-cdn.com/content/v1/6732bd65ccc0e358adb9002a/59243f07-253d-4cf4-b918-60bb34cb810b/ucmlogo.png%3Fformat=1500w" />
 
-    <!-- Favicon -->
-    <link href="https://images.squarespace-cdn.com/content/v1/6732bd65ccc0e358adb9002a/59243f07-253d-4cf4-b918-60bb34cb810b/ucmlogo.png%3Fformat=1500w" rel="icon" />
+  <!-- Favicon -->
+  <link href="https://images.squarespace-cdn.com/content/v1/6732bd65ccc0e358adb9002a/59243f07-253d-4cf4-b918-60bb34cb810b/ucmlogo.png%3Fformat=1500w" rel="icon" />
 
-    <!-- External CSS -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet" />
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet" />
-    <link href="/static/lib/animate/animate.min.css" rel="stylesheet" />
-    <link href="/static/lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet" />
-    <link href="/static/css/bootstrap.min.css" rel="stylesheet" />
-    <link href="/static/css/custom_styles.css" rel="stylesheet" />
+  <!-- External CSS -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet" />
+  <link href="/static/lib/animate/animate.min.css" rel="stylesheet" />
+  <link href="/static/lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet" />
+  <link href="/static/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="/static/css/custom_styles.css" rel="stylesheet" />
 
-    {% block css %}
-    {% endblock %}
+  {% block css %}
+  <style>
+    html, body { height: 100%; margin: 0; padding: 0; }
+    body { display: flex; flex-direction: column; }
+    main { flex: 1 0 auto; }
+    footer { flex-shrink: 0; }
+  </style>
+  {% endblock %}
+
+  <!-- HTMX -->
+  <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+  
   </head>
   <body>
     <!-- Navbar Start -->
@@ -48,15 +48,18 @@
             <h1 class="m-0 text-primary d-none d-md-block" style="font-size: 18px;">University Church</h1>
             <h1 class="m-0 text-primary d-block d-md-none" style="font-size: 18px;">Uni Church</h1>
           </a>
-          <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
-            <span class="navbar-toggler-icon"></span>
-          </button>
+          <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarCollapse"><span class="navbar-toggler-icon"></span></button>
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <div class="navbar-nav ms-auto">
               <a href="{{ url_for('main.index') }}" class="nav-item nav-link {% if active_page == 'home' %}active{% endif %}">Home</a>
-              <a href="/#pastor-section" class="nav-item nav-link">About</a>
+              <a href="{{ url_for('main.intro') }}" class="nav-item nav-link {% if active_page == 'intro' %}active{% endif %}">기독교 소개</a>
+              <a href="{{ url_for('main.sermons') }}" class="nav-item nav-link {% if active_page == 'sermons' %}active{% endif %}">설교</a>
+              <a href="{{ url_for('main.bible_study') }}" class="nav-item nav-link {% if active_page == 'bible_study' %}active{% endif %}">성경 공부</a>
+              <a href="{{ url_for('main.church_life') }}" class="nav-item nav-link {% if active_page == 'church_life' %}active{% endif %}">교회 생활</a>
+              <!-- FIXME! -->
+              <!-- <a href="{{ url_for('main.read_posts') }}" class="nav-item nav-link {% if active_page == 'read' %}active{% endif %}">게시글</a> -->
+              <a href="{{ url_for('main.about') }}" class="nav-item nav-link {% if active_page == 'about' %}active{% endif %}">교회 소개</a>
               <!-- 게시글 링크 수정: read_posts 엔드포인트 사용 -->
-              <a href="{{ url_for('main.read_posts') }}" class="nav-item nav-link {% if active_page == 'read' %}active{% endif %}">게시글</a>
               <!-- 자료공유 링크: upload_file 엔드포인트 사용 -->
               <a href="{{ url_for('main.upload_file') }}" class="nav-item nav-link {% if active_page == 'upload' %}active{% endif %}">자료공유</a>
               {% if session.get('is_pastor') %}
@@ -75,49 +78,27 @@
     <!-- Main Content -->
     <main>
       {% block content %}
+
       {% endblock %}
     </main>
 
     <!-- Footer Start -->
-    <footer>
-      <div class="container-fluid bg-dark text-white-50 footer pt-3 mt-3 wow fadeIn" data-wow-delay="0.1s">
-        <div class="container py-2">
-          <div class="row g-5">
-            <div class="col-lg-4 col-md-6">
-              <h5 class="text-white mb-4">Get In Touch</h5>
-              <p class="mb-2">
-                <i class="fa fa-map-marker-alt me-3"></i>8108 54th Ave. College Park, MD 20740
-              </p>
-              <p class="mb-2">
-                <i class="fa fa-envelope me-3"></i>info@uchurchmd.org
-              </p>
-              <div class="d-flex pt-2">
-                <a class="btn btn-outline-light btn-social" href="https://www.instagram.com/uchurchmd" target="_blank">
-                  <i class="fab fa-instagram"></i>
-                </a>
-                <a class="btn btn-outline-light btn-social" href="https://open.kakao.com/o/yourlink" target="_blank">
-                  KakaoTalk
-                </a>
-              </div>
-            </div>
-            <div class="col-lg-4 col-md-6">
-              <h5 class="text-white mb-4">Version Info</h5>
-              <p>Current Version: 1.0.0</p>
-              <p>
-                Developed By <a class="border-bottom" href="https://github.com/sueun-dev">Sueun Cho</a>
-              </p>
-            </div>
-            <div class="col-lg-4 col-md-6">
-              <h5 class="text-white mb-4">Legal</h5>
-              <p>Unauthorized use of content is strictly prohibited.</p>
-              <p>
-                For inquiries, contact us at
-                <a href="mailto:info@uchurchmd.org" class="text-white">info@uchurchmd.org</a>.
-              </p>
-              <p>
-                &copy; <a class="border-bottom" href="#">University Church</a>, All Right Reserved.
-              </p>
-            </div>
+    <footer class="container-fluid bg-dark text-white-50 footer pt-3 mt-3">
+      <div class="container py-2">
+        <div class="row g-5">
+          <div class="col-lg-4">
+            <h5>Get In Touch</h5>
+            <p><i class="fa fa-map-marker-alt me-3"></i>8108 54th Ave. College Park, MD 20740</p>
+            <p><i class="fa fa-envelope me-3"></i>info@uchurchmd.org</p>
+          </div>
+          <div class="col-lg-4">
+            <h5>Version Info</h5>
+            <p>Current Version: 1.0.0</p>
+            <p>Developed By <a href="https://github.com/sueun-dev">Sueun Cho</a></p>
+          </div>
+          <div class="col-lg-4">
+            <h5>Legal</h5>
+            <p>Unauthorized use of content prohibited.</p>
           </div>
         </div>
       </div>
@@ -133,6 +114,11 @@
     <script src="/static/lib/owlcarousel/owl.carousel.min.js"></script>
     <script src="/static/js/main.js"></script>
     {% block scripts %}
+
     {% endblock %}
   </body>
 </html>
+
+
+
+

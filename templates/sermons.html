@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% set active_page = 'sermons' %}
+{% block title %}설교{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+  <h1 class="mb-4">설교 게시판</h1>
+
+  {% if is_pastor %}
+  <div class="card mb-4">
+    <div class="card-header">게시글 작성 (설교)</div>
+    <div class="card-body">
+      <form method="POST">
+        <input type="text" name="title" class="form-control mb-3" placeholder="제목" required>
+        <textarea name="content" class="form-control mb-3" rows="5" placeholder="내용" required></textarea>
+        <button class="btn btn-primary">등록하기</button>
+      </form>
+    </div>
+  </div>
+  {% endif %}
+
+  {% for post in posts %}
+  <div class="card mb-3">
+    <div class="card-body">
+      <h5>{{ post.title }}</h5>
+      <p>{{ post.content }}</p>
+      <small>{{ post.created_at.strftime('%Y-%m-%d %H:%M') }}</small>
+      {% if is_pastor %}
+      <form action="{{ url_for('main.delete_post', post_id=post.id) }}" method="post" onsubmit="return confirm('삭제하시겠습니까?');">
+        <button class="btn btn-danger btn-sm mt-2">삭제</button>
+      </form>
+      {% endif %}
+    </div>
+  </div>
+  {% else %}
+  <p>게시글이 없습니다.</p>
+  {% endfor %}
+</div>
+{% endblock %}
