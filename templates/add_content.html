@@ -1,77 +1,97 @@
 {% extends 'base.html' %}
-{% block title %}새 콘텐츠 추가 - University Church{% endblock %}
+{% block title %}
+  새 콘텐츠 추가 - University Church
+{% endblock %}
 
 {% block content %}
-<div class="container py-5">
-  <div class="row justify-content-center">
-    <div class="col-lg-10">
-      <h2 class="mb-4">새 콘텐츠 추가</h2>
-      
-      <div class="card">
-        <div class="card-body">
-          <div class="alert alert-info mb-4">
-            <h5>간편한 콘텐츠 관리</h5>
-            <p>1. 아래 드롭다운 메뉴에서 원하는 콘텐츠 영역을 선택하세요</p>
-            <p>2. 내용을 입력하고 저장하세요</p>
-          </div>
+  <div class="container py-5">
+    <div class="row justify-content-center">
+      <div class="col-lg-10">
+        <h2 class="mb-4">새 콘텐츠 추가</h2>
 
-          <form method="POST">
-            <div class="mb-4">
-              <label for="content_selection" class="form-label">콘텐츠 영역 선택*</label>
-              <select name="content_selection" id="content_selection" class="form-select form-select-lg mb-3" required>
-                <option value="" selected disabled>콘텐츠 영역을 선택해주세요...</option>
-                
-                {% for category in content_options %}
-                <optgroup label="{{ category.category_name }}">
-                  {% for option in category.options %}
-                  <option value="{{ option.key }}">{{ option.title }}</option>
+        <div class="card">
+          <div class="card-body">
+            <div class="alert alert-info mb-4">
+              <h5>간편한 콘텐츠 관리</h5>
+              <p>1. 아래 드롭다운 메뉴에서 원하는 콘텐츠 영역을 선택하세요</p>
+              <p>2. 내용을 입력하고 저장하세요</p>
+            </div>
+
+            <form method="POST">
+              <div class="mb-4">
+                <label for="content_selection" class="form-label">콘텐츠 영역 선택*</label>
+                <select name="content_selection" id="content_selection" class="form-select form-select-lg mb-3" required>
+                  <option value="" selected disabled>콘텐츠 영역을 선택해주세요...</option>
+
+                  {% for category in content_options %}
+                    <optgroup label="{{ category.category_name }}">
+                      {% for option in category.options %}
+                        <option value="{{ option.key }}">{{ option.title }}</option>
+                      {% endfor %}
+                    </optgroup>
                   {% endfor %}
-                </optgroup>
-                {% endfor %}
-              </select>
-              <div class="form-text">어떤 콘텐츠를 수정할지 선택해주세요. 이미 존재하는 콘텐츠는 추가하지 않고 관리 페이지에서 수정해야 합니다.</div>
-            </div>
-            
-            <div class="mb-4">
-              <label for="content" class="form-label">콘텐츠 내용*</label>
-              <textarea name="content" id="content" class="form-control" 
-                        rows="12" required 
-                        placeholder="콘텐츠 내용을 입력하세요. 마크다운 형식을 지원합니다 (예: **굵게**, *기울임체*, # 제목 등)."></textarea>
-              <div class="form-text">
-                <h6>마크다운 간편 가이드:</h6>
-                <table class="table table-sm">
-                  <tr>
-                    <td width="200"><strong>굵게 표시:</strong></td>
-                    <td><code>**굵게 표시할 텍스트**</code></td>
-                  </tr>
-                  <tr>
-                    <td><strong>기울임체:</strong></td>
-                    <td><code>*기울임체로 표시할 텍스트*</code></td>
-                  </tr>
-                  <tr>
-                    <td><strong>제목:</strong></td>
-                    <td><code># 큰 제목</code><br><code>## 중간 제목</code><br><code>### 작은 제목</code></td>
-                  </tr>
-                  <tr>
-                    <td><strong>목록:</strong></td>
-                    <td><code>- 목록 항목 1</code><br><code>- 목록 항목 2</code></td>
-                  </tr>
-                  <tr>
-                    <td><strong>링크:</strong></td>
-                    <td><code>[링크 텍스트](https://example.com)</code></td>
-                  </tr>
-                </table>
+                </select>
+                <div class="form-text">어떤 콘텐츠를 수정할지 선택해주세요. 이미 존재하는 콘텐츠는 추가하지 않고 관리 페이지에서 수정해야 합니다.</div>
               </div>
-            </div>
-            
-            <div class="d-flex gap-2 justify-content-end">
-              <a href="{{ url_for('main.manage_content') }}" class="btn btn-secondary">취소</a>
-              <button type="submit" class="btn btn-primary">저장</button>
-            </div>
-          </form>
+
+              <div class="mb-4">
+                <label for="content" class="form-label">콘텐츠 내용*</label>
+                <textarea name="content" id="content" class="form-control" rows="12" required placeholder="콘텐츠 내용을 입력하세요. 마크다운 형식을 지원합니다 (예: **굵게**, *기울임체*, # 제목 등)."></textarea>
+                <div class="form-text">
+                  <h6>마크다운 간편 가이드:</h6>
+                  <table class="table table-sm">
+                    <tr>
+                      <td width="200">
+                        <strong>굵게 표시:</strong>
+                      </td>
+                      <td>
+                        <code>**굵게 표시할 텍스트**</code>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <strong>기울임체:</strong>
+                      </td>
+                      <td>
+                        <code>*기울임체로 표시할 텍스트*</code>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <strong>제목:</strong>
+                      </td>
+                      <td>
+                        <code># 큰 제목</code><br /><code>## 중간 제목</code><br /><code>### 작은 제목</code>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <strong>목록:</strong>
+                      </td>
+                      <td>
+                        <code>- 목록 항목 1</code><br /><code>- 목록 항목 2</code>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <strong>링크:</strong>
+                      </td>
+                      <td>
+                        <code>[링크 텍스트](https://example.com)</code>
+                      </td>
+                    </tr>
+                  </table>
+                </div>
+              </div>
+
+              <div class="d-flex gap-2 justify-content-end">
+                <a href="{{ url_for('main.manage_content') }}" class="btn btn-secondary">취소</a>
+                <button type="submit" class="btn btn-primary">저장</button>
+              </div>
+            </form>
+          </div>
         </div>
       </div>
     </div>
   </div>
-</div>
 {% endblock %}
