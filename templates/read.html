@@ -43,7 +43,7 @@
       <div class="card mb-3">
         <div class="card-body">
           <h5 class="card-title">{{ post.title }}</h5>
-          <p class="card-text">{{ post.content }}</p>
+          <div class="card-text post-content">{{ post.content|markdown }}</div>
           <p class="card-text">
             <small class="text-muted">작성일: {{ post.created_at.strftime('%Y-%m-%d %H:%M') }}</small>
           </p>

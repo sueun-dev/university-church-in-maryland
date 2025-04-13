@@ -3,27 +3,37 @@ import time
 from datetime import datetime, timedelta
 from typing import Any, List, Dict, Tuple
 from flask import (
-    Blueprint,
-    request,
-    render_template,
-    redirect,
-    url_for,
-    flash,
-    jsonify,
-    send_from_directory,
-    Response,
-    session,
+    render_template, Blueprint, request,
+    redirect, url_for, flash, session, current_app, send_from_directory,
+    abort, Response, jsonify
 )
 from werkzeug.utils import secure_filename
 from flask.views import MethodView
+import markdown
+from markupsafe import Markup
 
 from .. import db
-from ..models import PDFFile, Post, ZoomLink
+from ..models import PDFFile, Post, ZoomLink, SiteContent
 from ..config import Config
 from ..decorators import check_auth, authenticate, requires_auth
 from ..utils import allowed_file
 
 bp = Blueprint("main", __name__)
+
+
+# 템플릿에서 사용할 콘텐츠 가져오기 함수
+def get_content(key, default=""):
+    """키를 기반으로 콘텐츠를 가져오는 유틸리티 함수"""
+    content = SiteContent.query.filter_by(key=key).first()
+    return content.content if content else default
+
+
+# 모든 템플릿에서 get_content 함수 사용 가능하도록 설정
+@bp.context_processor
+def inject_utility_functions():
+    return {
+        "get_content": get_content
+    }
 
 os.makedirs(Config.UPLOAD_FOLDER, exist_ok=True)
 
@@ -63,8 +73,9 @@ def register_failed_login(ip: str) -> int:
 def index():
     zoom_link = ZoomLink.query.first()
     zoom_url = zoom_link.url if zoom_link else "https://us02web.zoom.us/j/89486134981#success"
+    zoom_password = zoom_link.password if zoom_link and zoom_link.password else ""
     is_pastor = session.get('is_pastor', False)
-    return render_template("index.html", zoom_url=zoom_url, is_pastor=is_pastor)
+    return render_template("index.html", zoom_url=zoom_url, zoom_password=zoom_password, is_pastor=is_pastor)
 
 
 @bp.route("/pastor-chat")
@@ -96,7 +107,9 @@ bp.add_url_rule("/read", view_func=PostView.as_view("read_posts"), methods=["GET
 
 # Helper for categorized boards
 def handle_post_category(category: str, template: str) -> Any:
-    posts = Post.query.filter_by(category=category).order_by(Post.created_at.desc()).all()
+    page = request.args.get('page', 1, type=int)
+    pagination = Post.query.filter_by(category=category).order_by(Post.created_at.desc()).paginate(page=page, per_page=10, error_out=False)
+    posts = pagination.items
     is_pastor = bool(session.get("is_pastor"))
     if request.method == "POST":
         if not is_pastor:
@@ -112,7 +125,7 @@ def handle_post_category(category: str, template: str) -> Any:
         db.session.commit()
         flash("게시글이 등록되었습니다.", "success")
         return redirect(request.url)
-    return render_template(template, posts=posts, is_pastor=is_pastor, active_page=category)
+    return render_template(template, posts=posts, is_pastor=is_pastor, pagination=pagination, active_page=category)
 
 @bp.route("/intro", methods=["GET", "POST"])
 def intro():
@@ -200,12 +213,14 @@ def delete_file(file_id: int) -> Any:
 @requires_auth()
 def update_zoom_link():
     new_url = request.form.get("zoom_url", "").strip()
+    new_password = request.form.get("zoom_password", "").strip()
     if new_url:
         zoom_link = ZoomLink.query.first()
         if zoom_link:
             zoom_link.url = new_url
+            zoom_link.password = new_password if new_password else None
         else:
-            zoom_link = ZoomLink(url=new_url)
+            zoom_link = ZoomLink(url=new_url, password=new_password if new_password else None)
             db.session.add(zoom_link)
         db.session.commit()
         flash("Zoom 링크가 성공적으로 변경되었습니다.", "success")
@@ -289,3 +304,115 @@ def logout() -> Any:
     session.pop("is_pastor", None)
     flash("로그아웃되었습니다.", "success")
     return redirect(url_for("main.index"))
+
+
+@bp.route("/manage-content")
+@requires_auth()
+def manage_content() -> Any:
+    """콘텐츠 관리 페이지"""
+    contents = SiteContent.query.all()
+    return render_template("manage_content.html", contents=contents)
+
+
+@bp.route("/edit-content/<int:content_id>", methods=["GET", "POST"])
+@requires_auth()
+def edit_content(content_id) -> Any:
+    """콘텐츠 편집 페이지"""
+    content = SiteContent.query.get_or_404(content_id)
+    
+    if request.method == "POST":
+        title = request.form.get("title", "").strip()
+        content_text = request.form.get("content", "").strip()
+        
+        if title and content_text:
+            content.title = title
+            content.content = content_text
+            db.session.commit()
+            flash("콘텐츠가 성공적으로 업데이트되었습니다.", "success")
+            return redirect(url_for("main.manage_content"))
+        else:
+            flash("제목과 내용을 모두 입력해주세요.", "danger")
+    
+    return render_template("edit_content.html", content=content)
+
+
+@bp.route("/add-content", methods=["GET", "POST"])
+@requires_auth()
+def add_content():
+    # 미리 정의된 페이지 영역별 콘텐츠 옵션
+    content_options = [
+        {
+            "category": "main",
+            "category_name": "메인 페이지",
+            "options": [
+                {"key": "main_top_welcome", "title": "메인 페이지 - 상단 환영 메시지"},
+                {"key": "main_church_intro", "title": "메인 페이지 - 교회 간략 소개"},
+                {"key": "main_vision_statement", "title": "메인 페이지 - 교회 비전"},
+            ]
+        },
+        {
+            "category": "about",
+            "category_name": "교회 소개 페이지",
+            "options": [
+                {"key": "about_page_intro", "title": "교회 소개 페이지 - 상세 소개"},
+                {"key": "about_page_pastor_message", "title": "교회 소개 페이지 - 목사님 인사말"},
+                {"key": "about_page_history", "title": "교회 소개 페이지 - 교회 역사"},
+            ]
+        },
+        {
+            "category": "global",
+            "category_name": "공통 요소",
+            "options": [
+                {"key": "global_service_times", "title": "예배 시간 정보 (모든 페이지)"},
+                {"key": "global_footer_contact", "title": "하단부 연락처 정보 (모든 페이지)"},
+            ]
+        }
+    ]
+    
+    if request.method == "POST":
+        selection = request.form.get("content_selection")
+        content_text = request.form.get("content")
+
+        if not selection or not content_text:
+            flash("모든 필드를 채워주세요", "danger")
+            return redirect(url_for("main.add_content"))
+            
+        # 선택된 옵션 찾기
+        selected_option = None
+        for category in content_options:
+            for option in category["options"]:
+                if option["key"] == selection:
+                    selected_option = option
+                    break
+            if selected_option:
+                break
+                
+        if not selected_option:
+            flash("잘못된 옵션이 선택되었습니다", "danger")
+            return redirect(url_for("main.add_content"))
+
+        # 중복 키 확인
+        existing = SiteContent.query.filter_by(key=selection).first()
+        if existing:
+            flash(f"''{selected_option['title']}' 콘텐츠는 이미 존재합니다. 수정하시려면 관리 페이지에서 해당 콘텐츠를 선택해주세요.", "warning")
+            return redirect(url_for("main.manage_content"))
+
+        new_content = SiteContent(key=selection, title=selected_option["title"], content=content_text)
+        db.session.add(new_content)
+        db.session.commit()
+
+        flash("콘텐츠가 성공적으로 추가되었습니다!", "success")
+        return redirect(url_for("main.manage_content"))
+
+    return render_template("add_content.html", content_options=content_options)
+
+
+@bp.route("/delete-content/<int:content_id>", methods=["POST"])
+@requires_auth()
+def delete_content(content_id) -> Any:
+    """콘텐츠 삭제"""
+    content = SiteContent.query.get_or_404(content_id)
+    db.session.delete(content)
+    db.session.commit()
+    flash("콘텐츠가 삭제되었습니다.", "success")
+    return redirect(url_for("main.manage_content"))
