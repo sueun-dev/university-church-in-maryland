@@ -21,7 +21,7 @@ class Post(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(255), nullable=False)
     content = db.Column(db.Text, nullable=False)
-    category = db.Column(db.String(50), nullable=False, default='general')  # ✅ Added category field
+    category = db.Column(db.String(50), nullable=False, default='general')
     created_at = db.Column(
         db.DateTime, nullable=False, default=db.func.current_timestamp()
     )
@@ -29,7 +29,7 @@ class Post(db.Model):
     def __init__(self, *, title: str, content: str, category: str = 'general') -> None:
         self.title = title
         self.content = content
-        self.category = category  # ✅ Updated constructor
+        self.category = category
 
     def __repr__(self) -> str:
         return f"Post('{self.title}', '{self.category}', '{self.created_at}')"
@@ -37,4 +37,14 @@ class Post(db.Model):
 class ZoomLink(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     url = db.Column(db.String(255), nullable=False)
+    password = db.Column(db.String(50), nullable=True)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+
+class SiteContent(db.Model):
+    """사이트 콘텐츠 저장을 위한 모델"""
+    id = db.Column(db.Integer, primary_key=True)
+    key = db.Column(db.String(50), unique=True, nullable=False)  # 콘텐츠 식별자 (welcome_message, about_church 등)
+    title = db.Column(db.String(100), nullable=False)  # 콘텐츠 제목
+    content = db.Column(db.Text, nullable=False)  # 콘텐츠 내용
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)

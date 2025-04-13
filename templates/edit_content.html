@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% block title %}콘텐츠 편집 - University Church{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-10">
+      <h2 class="mb-4">콘텐츠 편집: {{ content.title }}</h2>
+      
+      <div class="card">
+        <div class="card-body">
+          <form method="POST">
+            <div class="mb-3">
+              <label for="key" class="form-label">콘텐츠 식별키</label>
+              <input type="text" class="form-control" value="{{ content.key }}" readonly disabled>
+              <div class="form-text">식별키는 수정할 수 없습니다.</div>
+            </div>
+            
+            <div class="mb-3">
+              <label for="title" class="form-label">콘텐츠 제목*</label>
+              <input type="text" name="title" id="title" class="form-control" 
+                     value="{{ content.title }}" required>
+            </div>
+            
+            <div class="mb-3">
+              <label for="content" class="form-label">콘텐츠 내용*</label>
+              <textarea name="content" id="content" class="form-control" 
+                        rows="10" required>{{ content.content }}</textarea>
+              <div class="form-text">
+                마크다운 형식을 지원합니다.<br>
+                <strong>굵게</strong>: **텍스트**<br>
+                <em>기울임체</em>: *텍스트*<br>
+                <strong>제목</strong>: # 큰 제목, ## 중간 제목, ### 작은 제목<br>
+                <strong>목록</strong>: - 항목1, - 항목2 또는 1. 항목1, 2. 항목2<br>
+                <strong>링크</strong>: [텍스트](URL)<br>
+                줄바꿈은 엔터를 두 번 눌러 빈 줄을 만들면 됩니다.
+              </div>
+            </div>
+            
+            <div class="mb-4">
+              <h5>미리보기</h5>
+              <div class="border rounded p-3 bg-light">
+                <div class="post-content">{{ content.content|markdown }}</div>
+              </div>
+            </div>
+            
+            <div class="d-flex gap-2 justify-content-end">
+              <a href="{{ url_for('main.manage_content') }}" class="btn btn-secondary">취소</a>
+              <button type="submit" class="btn btn-primary">저장</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

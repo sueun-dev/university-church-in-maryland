@@ -106,12 +106,12 @@
         <h1 class="display-5 animated fadeIn mb-4">
           <span class="text-primary">University Church</span> in College Park
         </h1>
-        <p class="animated fadeIn mb-4 pb-2">
-          유니버시티 교회는 50여년간 메릴랜드 대학 가족과 지역 이민사회가 함께 세워 온 신앙 공동체입니다.
-        </p>
-        <p class="animated fadeIn mb-4 pb-2">
-          주일 예배, 성경 공부, 그리고 다양한 소그룹 모임을 통해 하나님의 은혜와 사랑을 나누며, 모든 이들을 환영합니다.
-        </p>
+        <div class="animated fadeIn mb-4 pb-2">
+          {{ get_content('main_top_welcome')|markdown }}
+        </div>
+        <div class="animated fadeIn mb-4 pb-2">
+          {{ get_content('main_church_intro')|markdown }}
+        </div>
       </div>
       <div class="col-md-6 fadeIn d-flex justify-content-center">
         <div class="owl-carousel header-carousel">
@@ -154,15 +154,20 @@
             </div>
           </div>
           <a class="btn btn-primary py-3 px-5 mt-4" href="{{ zoom_url }}" target="_blank">
-            새벽 기도회 Zoom (passwd: 233534)
+            새벽 기도회 Zoom {% if zoom_password %}(passwd: {{ zoom_password }}){% endif %}
           </a>
           
           {% if is_pastor %}
           <!-- Pastor-only Zoom Link Update Form -->
           <div class="mt-4">
-            <form action="{{ url_for('main.update_zoom_link') }}" method="POST" class="d-flex justify-content-center gap-2">
-              <input type="url" name="zoom_url" class="form-control" style="max-width: 400px;" placeholder="새 Zoom URL 입력" required>
-              <button type="submit" class="btn btn-danger">Zoom 링크 변경</button>
+            <form action="{{ url_for('main.update_zoom_link') }}" method="POST" class="d-flex flex-column justify-content-center gap-2">
+              <div class="d-flex gap-2">
+                <input type="url" name="zoom_url" class="form-control" style="max-width: 400px;" placeholder="새 Zoom URL 입력" required>
+                <input type="text" name="zoom_password" class="form-control" style="max-width: 200px;" placeholder="비밀번호 (선택사항)" value="{{ zoom_password }}">
+              </div>
+              <div class="d-flex justify-content-center mt-2">
+                <button type="submit" class="btn btn-danger">Zoom 링크 변경</button>
+              </div>
             </form>
           </div>
           {% endif %}

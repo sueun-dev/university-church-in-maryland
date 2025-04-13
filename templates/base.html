@@ -35,7 +35,65 @@
   <!-- HTMX -->
   <script src="https://unpkg.com/htmx.org@1.9.10"></script>
   
-  </head>
+    <!-- 마크다운 콘텐츠 스타일 -->
+  <style>
+    .post-content {
+      line-height: 1.6;
+      word-break: break-word;
+      overflow-wrap: break-word;
+    }
+    .post-content h1, .post-content h2, .post-content h3, .post-content h4, .post-content h5, .post-content h6 {
+      margin-top: 1rem;
+      margin-bottom: 0.8rem;
+      font-weight: 600;
+    }
+    .post-content p {
+      margin-bottom: 1rem;
+    }
+    .post-content ul, .post-content ol {
+      margin-left: 1.5rem;
+      margin-bottom: 1rem;
+    }
+    .post-content blockquote {
+      border-left: 3px solid #ccc;
+      padding-left: 1rem;
+      margin-left: 0.5rem;
+      color: #555;
+    }
+    .post-content pre {
+      background-color: #f8f9fa;
+      padding: 1rem;
+      border-radius: 4px;
+      overflow-x: auto;
+    }
+    .post-content code {
+      background-color: #f8f9fa;
+      padding: 0.2rem 0.4rem;
+      border-radius: 4px;
+      font-family: monospace;
+    }
+    .post-content img {
+      max-width: 100%;
+      height: auto;
+    }
+    .post-content a {
+      color: #0d6efd;
+      text-decoration: underline;
+    }
+    .post-content table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 1rem;
+    }
+    .post-content table th, .post-content table td {
+      border: 1px solid #dee2e6;
+      padding: 0.5rem;
+    }
+    .post-content table th {
+      background-color: #f8f9fa;
+    }
+  </style>
+</head>
   <body>
     <!-- Navbar Start -->
     <header>
@@ -52,13 +110,14 @@
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <div class="navbar-nav ms-auto">
               <a href="{{ url_for('main.index') }}" class="nav-item nav-link {% if active_page == 'home' %}active{% endif %}">Home</a>
+              <a href="{{ url_for('main.about') }}" class="nav-item nav-link {% if active_page == 'about' %}active{% endif %}">교회 소개</a>
               <a href="{{ url_for('main.intro') }}" class="nav-item nav-link {% if active_page == 'intro' %}active{% endif %}">기독교 소개</a>
               <a href="{{ url_for('main.sermons') }}" class="nav-item nav-link {% if active_page == 'sermons' %}active{% endif %}">설교</a>
               <a href="{{ url_for('main.bible_study') }}" class="nav-item nav-link {% if active_page == 'bible_study' %}active{% endif %}">성경 공부</a>
               <a href="{{ url_for('main.church_life') }}" class="nav-item nav-link {% if active_page == 'church_life' %}active{% endif %}">교회 생활</a>
               <!-- FIXME! -->
               <!-- <a href="{{ url_for('main.read_posts') }}" class="nav-item nav-link {% if active_page == 'read' %}active{% endif %}">게시글</a> -->
-              <a href="{{ url_for('main.about') }}" class="nav-item nav-link {% if active_page == 'about' %}active{% endif %}">교회 소개</a>
+              
               <!-- 게시글 링크 수정: read_posts 엔드포인트 사용 -->
               <!-- 자료공유 링크: upload_file 엔드포인트 사용 -->
               <a href="{{ url_for('main.upload_file') }}" class="nav-item nav-link {% if active_page == 'upload' %}active{% endif %}">자료공유</a>
@@ -67,7 +126,8 @@
               {% else %}
                 <a href="{{ url_for('main.login', next=request.url) }}" class="nav-item nav-link">관리자 로그인</a>
               {% endif %}
-              <a href="https://www.youtube.com/@uchurchmd" class="btn btn-outline-red">UChurchMD TV</a>
+              <a href="https://www.youtube.com/@uchurchmd" class="btn btn-outline-red me-2">UChurchMD TV</a>
+              <a href="https://universitychurchmd.org" class="btn btn-outline-primary" target="_blank">이전 홈페이지</a>
             </div>
           </div>
         </nav>

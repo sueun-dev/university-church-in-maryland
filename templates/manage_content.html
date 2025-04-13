@@ -1,0 +1,214 @@
+{% extends 'base.html' %}
+{% block title %}콘텐츠 관리 - University Church{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>홈페이지 콘텐츠 관리</h2>
+    <a href="{{ url_for('main.add_content') }}" class="btn btn-success">새 콘텐츠 추가</a>
+  </div>
+
+  {% if contents %}
+  <div class="alert alert-info mb-4">
+    <p class="mb-0">각 콘텐츠의 제목에는 해당 콘텐츠가 어느 페이지의 어떤 영역에 표시되는지 명시되어 있습니다. <strong>처음 사용하시는 경우 '메인 페이지 - 상단 환영 메시지'와 같은 제목을 참고하세요.</strong></p>
+  </div>
+  
+  <!-- 콘텐츠 관리를 페이지 별로 그룹화 -->
+  <ul class="nav nav-tabs mb-4" id="contentTabs" role="tablist">
+    <li class="nav-item" role="presentation">
+      <button class="nav-link active" id="main-tab" data-bs-toggle="tab" data-bs-target="#main" 
+      type="button" role="tab" aria-controls="main" aria-selected="true">메인 페이지</button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" id="about-tab" data-bs-toggle="tab" data-bs-target="#about" 
+      type="button" role="tab" aria-controls="about" aria-selected="false">교회 소개 페이지</button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" id="global-tab" data-bs-toggle="tab" data-bs-target="#global" 
+      type="button" role="tab" aria-controls="global" aria-selected="false">공통 요소</button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" id="other-tab" data-bs-toggle="tab" data-bs-target="#other" 
+      type="button" role="tab" aria-controls="other" aria-selected="false">기타 콘텐츠</button>
+    </li>
+  </ul>
+  
+  <div class="tab-content" id="contentTabsContent">
+    <!-- 메인 페이지 관련 콘텐츠 -->
+    <div class="tab-pane fade show active" id="main" role="tabpanel" aria-labelledby="main-tab">
+      <div class="table-responsive">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>식별키</th>
+              <th>내용 대상</th>
+              <th>마지막 수정일</th>
+              <th>작업</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for content in contents %}
+              {% if content.key.startswith('main_') %}
+              <tr>
+                <td><code>{{ content.key }}</code></td>
+                <td>
+                  <div class="fw-bold">{{ content.title }}</div>
+                  <div class="small text-muted">{{ content.content|truncate(50) }}</div>
+                </td>
+                <td>{{ content.updated_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                <td>
+                  <div class="d-flex gap-2">
+                    <a href="{{ url_for('main.edit_content', content_id=content.id) }}" class="btn btn-primary btn-sm">수정</a>
+                    <form action="{{ url_for('main.delete_content', content_id=content.id) }}" method="post" onsubmit="return confirm('정말 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.');">
+                      <button type="submit" class="btn btn-danger btn-sm">삭제</button>
+                    </form>
+                  </div>
+                </td>
+              </tr>
+              {% endif %}
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    
+    <!-- 교회 소개 페이지 관련 콘텐츠 -->
+    <div class="tab-pane fade" id="about" role="tabpanel" aria-labelledby="about-tab">
+      <div class="table-responsive">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>식별키</th>
+              <th>내용 대상</th>
+              <th>마지막 수정일</th>
+              <th>작업</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for content in contents %}
+              {% if content.key.startswith('about_') %}
+              <tr>
+                <td><code>{{ content.key }}</code></td>
+                <td>
+                  <div class="fw-bold">{{ content.title }}</div>
+                  <div class="small text-muted">{{ content.content|truncate(50) }}</div>
+                </td>
+                <td>{{ content.updated_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                <td>
+                  <div class="d-flex gap-2">
+                    <a href="{{ url_for('main.edit_content', content_id=content.id) }}" class="btn btn-primary btn-sm">수정</a>
+                    <form action="{{ url_for('main.delete_content', content_id=content.id) }}" method="post" onsubmit="return confirm('정말 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.');">
+                      <button type="submit" class="btn btn-danger btn-sm">삭제</button>
+                    </form>
+                  </div>
+                </td>
+              </tr>
+              {% endif %}
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    
+    <!-- 공통 요소 관련 콘텐츠 -->
+    <div class="tab-pane fade" id="global" role="tabpanel" aria-labelledby="global-tab">
+      <div class="table-responsive">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>식별키</th>
+              <th>내용 대상</th>
+              <th>마지막 수정일</th>
+              <th>작업</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for content in contents %}
+              {% if content.key.startswith('global_') %}
+              <tr>
+                <td><code>{{ content.key }}</code></td>
+                <td>
+                  <div class="fw-bold">{{ content.title }}</div>
+                  <div class="small text-muted">{{ content.content|truncate(50) }}</div>
+                </td>
+                <td>{{ content.updated_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                <td>
+                  <div class="d-flex gap-2">
+                    <a href="{{ url_for('main.edit_content', content_id=content.id) }}" class="btn btn-primary btn-sm">수정</a>
+                    <form action="{{ url_for('main.delete_content', content_id=content.id) }}" method="post" onsubmit="return confirm('정말 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.');">
+                      <button type="submit" class="btn btn-danger btn-sm">삭제</button>
+                    </form>
+                  </div>
+                </td>
+              </tr>
+              {% endif %}
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    
+    <!-- 기타 콘텐츠 -->
+    <div class="tab-pane fade" id="other" role="tabpanel" aria-labelledby="other-tab">
+      <div class="table-responsive">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>식별키</th>
+              <th>내용 대상</th>
+              <th>마지막 수정일</th>
+              <th>작업</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for content in contents %}
+              {% if not content.key.startswith('main_') and not content.key.startswith('about_') and not content.key.startswith('global_') %}
+              <tr>
+                <td><code>{{ content.key }}</code></td>
+                <td>
+                  <div class="fw-bold">{{ content.title }}</div>
+                  <div class="small text-muted">{{ content.content|truncate(50) }}</div>
+                </td>
+                <td>{{ content.updated_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                <td>
+                  <div class="d-flex gap-2">
+                    <a href="{{ url_for('main.edit_content', content_id=content.id) }}" class="btn btn-primary btn-sm">수정</a>
+                    <form action="{{ url_for('main.delete_content', content_id=content.id) }}" method="post" onsubmit="return confirm('정말 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.');">
+                      <button type="submit" class="btn btn-danger btn-sm">삭제</button>
+                    </form>
+                  </div>
+                </td>
+              </tr>
+              {% endif %}
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  {% else %}
+  <div class="alert alert-info">
+    <p class="mb-0">아직 등록된 콘텐츠가 없습니다. 새 콘텐츠를 추가해주세요.</p>
+  </div>
+  {% endif %}
+
+  <div class="alert alert-warning mt-4">
+    <h5>콘텐츠 사용 방법</h5>
+    <p>템플릿에서 다음과 같이 콘텐츠를 불러올 수 있습니다:</p>
+    <pre><code>{{ '{{ get_content("your_content_key") }}' }}</code></pre>
+    <p>마크다운 형식도 지원됩니다. 다음과 같이 사용하세요:</p>
+    <pre><code>{{ '{{ get_content("your_content_key") | markdown }}' }}</code></pre>
+  </div>
+  
+  <div class="alert alert-secondary mt-3">
+    <h5>콘텐츠 키 명명 규칙</h5>
+    <p>키는 다음 규칙을 따르며 지정됩니다:</p>
+    <ul>
+      <li><code>main_*</code>: 메인 페이지에 표시되는 콘텐츠 (예: <code>main_top_welcome</code>)</li>
+      <li><code>about_*</code>: 교회 소개 페이지에 표시되는 콘텐츠 (예: <code>about_page_intro</code>)</li>
+      <li><code>global_*</code>: 여러 페이지에 공통으로 표시되는 콘텐츠 (예: <code>global_footer_contact</code>)</li>
+    </ul>
+    <p><strong>팁</strong>: 해당 콘텐츠가 표시되는 위치와 목적을 명확하게 알 수 있도록 키와 제목을 지정하세요.</p>
+  </div>
+</div>
+{% endblock %}
