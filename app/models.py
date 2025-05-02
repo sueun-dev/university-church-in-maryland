@@ -1,6 +1,7 @@
 from . import db
 from datetime import datetime
 
+
 class PDFFile(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     filename = db.Column(db.String(255), nullable=False)
@@ -48,3 +49,14 @@ class SiteContent(db.Model):
     title = db.Column(db.String(100), nullable=False)  # 콘텐츠 제목
     content = db.Column(db.Text, nullable=False)  # 콘텐츠 내용
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+
+class Message(db.Model):
+    """교인들이 목사님에게 남기는 메시지 모델"""
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)  # 작성자 이름
+    email = db.Column(db.String(100), nullable=True)  # 답변받을 이메일 (선택)
+    subject = db.Column(db.String(200), nullable=False)  # 메시지 제목
+    content = db.Column(db.Text, nullable=False)  # 메시지 내용
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)  # 작성 시간
+    is_read = db.Column(db.Boolean, default=False)  # 읽음 상태

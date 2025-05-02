@@ -13,10 +13,16 @@ import markdown
 from markupsafe import Markup
 
 from .. import db
-from ..models import PDFFile, Post, ZoomLink, SiteContent
+from ..models import PDFFile, Post, ZoomLink, SiteContent, Message
 from ..config import Config
 from ..decorators import check_auth, authenticate, requires_auth
 from ..utils import allowed_file
+
+# nl2br 필터 정의: 줄바꿈 문자를 HTML <br> 태그로 변환
+def nl2br(value):
+    if not value:
+        return ""
+    return Markup(value.replace('\n', '<br>'))
 
 bp = Blueprint("main", __name__)
 
@@ -31,9 +37,22 @@ def get_content(key, default=""):
 # 모든 템플릿에서 get_content 함수 사용 가능하도록 설정
 @bp.context_processor
 def inject_utility_functions():
-    return {
+    # get_content 함수와 함께 읽지 않은 메시지 수를 템플릿에 제공
+    context = {
         "get_content": get_content
     }
+    
+    # 목사님이 로그인한 경우에만 읽지 않은 메시지 수 계산
+    if session.get('is_pastor'):
+        unread_count = Message.query.filter_by(is_read=False).count()
+        context["unread_count"] = unread_count
+    
+    return context
+
+# nl2br 필터 등록
+@bp.app_template_filter('nl2br')
+def nl2br_filter(s):
+    return nl2br(s)
 
 os.makedirs(Config.UPLOAD_FOLDER, exist_ok=True)
 
@@ -146,68 +165,126 @@ def church_life():
 @bp.route("/delete_post/<int:post_id>", methods=["POST"])
 @requires_auth()
 def delete_post(post_id: int) -> Any:
-    post = Post.query.get_or_404(post_id)
-    category = post.category
-    db.session.delete(post)
-    db.session.commit()
-    flash("게시글이 삭제되었습니다.", "success")
+    try:
+        post = Post.query.get_or_404(post_id)
+        category = post.category
+        
+        # 게시글 삭제 전에 session flush를 수행하여 트랜잭션 상태 확인
+        db.session.flush()
+        
+        # 게시글 삭제 실행
+        db.session.delete(post)
+        db.session.commit()
+        flash("게시글이 삭제되었습니다.", "success")
 
-    # Dynamic redirect based on category
-    redirect_map = {
-        "intro": "main.intro",
-        "sermons": "main.sermons",
-        "bible_study": "main.bible_study",
-        "church_life": "main.church_life",
-        None: "main.read_posts",
-    }
-    return redirect(url_for(redirect_map.get(category, "main.read_posts")))
+        # Dynamic redirect based on category
+        redirect_map = {
+            "intro": "main.intro",
+            "sermons": "main.sermons",
+            "bible_study": "main.bible_study",
+            "church_life": "main.church_life",
+            None: "main.read_posts",
+        }
+        return redirect(url_for(redirect_map.get(category, "main.read_posts")))
+    except Exception as e:
+        # 오류 발생 시 롤백 및 에러 메시지 표시
+        db.session.rollback()
+        flash(f"게시글 삭제 중 오류가 발생했습니다: {str(e)}", "danger")
+        current_app.logger.error(f"Error deleting post {post_id}: {str(e)}")
+        
+        # 오류 발생 시 이전 페이지로 리디렉션
+        if category:
+            return redirect(url_for(f"main.{category}"))
+        return redirect(url_for("main.read_posts"))
 
 
 @bp.route("/upload", methods=["GET", "POST"])
 def upload_file() -> Any:
     """Handle file uploads."""
+    # 세션 기반 인증 확인 - is_pastor 세션 값 확인
+    is_pastor = session.get('is_pastor', False)
+    
     if request.method == "POST":
-        if not verify_auth():
-            return authenticate()
-        if "file_input" not in request.files:
-            flash("No file part", "danger")
+        # 세션 기반 인증 또는 Basic Auth 둘 중 하나라도 통과하면 업로드 허용
+        if not (is_pastor or verify_auth()):
+            flash("파일 업로드를 위해 관리자 권한이 필요합니다.", "warning")
+            return redirect(url_for('main.login', next=request.path))
+            
+        try:
+            if "file_input" not in request.files:
+                flash("파일이 선택되지 않았습니다.", "danger")
+                return redirect(request.url)
+                
+            file = request.files["file_input"]
+            original_filename = file.filename or ""
+            
+            if not original_filename:
+                flash("파일이 선택되지 않았습니다.", "danger")
+                return redirect(request.url)
+                
+            if not allowed_file(original_filename):
+                flash("허용되지 않는 파일 형식입니다.", "danger")
+                return redirect(request.url)
+                
+            safe_filename = secure_filename(original_filename)
+            if not safe_filename:
+                _, ext = os.path.splitext(original_filename)
+                safe_filename = f"{datetime.utcnow().strftime('%Y%m%d%H%M%S')}{ext}"
+                
+            filepath = os.path.join(Config.UPLOAD_FOLDER, safe_filename)
+            file.save(filepath)
+            
+            new_file = PDFFile(filename=original_filename, disk_filename=safe_filename)
+            db.session.add(new_file)
+            db.session.commit()
+            
+            flash(f"파일 '{original_filename}'이 성공적으로 업로드되었습니다.", "success")
+            files = get_files_with_new_flag()
+            return render_template("upload.html", files=files, success=True)
+            
+        except Exception as e:
+            db.session.rollback()
+            current_app.logger.error(f"파일 업로드 중 오류 발생: {str(e)}")
+            flash(f"파일 업로드 중 오류가 발생했습니다: {str(e)}", "danger")
             return redirect(request.url)
-        file = request.files["file_input"]
-        original_filename = file.filename or ""
-        if not original_filename:
-            flash("No selected file", "danger")
-            return redirect(request.url)
-        if not allowed_file(original_filename):
-            flash("File type not allowed", "danger")
-            return redirect(request.url)
-        safe_filename = secure_filename(original_filename)
-        if not safe_filename:
-            _, ext = os.path.splitext(original_filename)
-            safe_filename = f"{datetime.utcnow().strftime('%Y%m%d%H%M%S')}{ext}"
-        filepath = os.path.join(Config.UPLOAD_FOLDER, safe_filename)
-        file.save(filepath)
-        new_file = PDFFile(filename=original_filename, disk_filename=safe_filename)
-        db.session.add(new_file)
-        db.session.commit()
-        files = get_files_with_new_flag()
-        return render_template("upload.html", files=files, success=True)
+            
+    # GET 요청 처리
     files = get_files_with_new_flag()
-    return render_template("upload.html", files=files, success=False)
+    return render_template("upload.html", files=files, success=False, is_pastor=is_pastor)
 
 
 @bp.route("/delete/<int:file_id>", methods=["POST"])
 def delete_file(file_id: int) -> Any:
     """Delete a file record and remove the file from disk."""
-    if not verify_auth():
-        return authenticate()
-    file_to_delete = PDFFile.query.get_or_404(file_id)
-    filepath = os.path.join(Config.UPLOAD_FOLDER, file_to_delete.disk_filename)
-    if os.path.exists(filepath):
-        os.remove(filepath)
-    db.session.delete(file_to_delete)
-    db.session.commit()
-    flash(f"File {file_to_delete.filename} deleted successfully!", "success")
-    return redirect(url_for("main.upload_file"))
+    # 세션 기반 인증 확인 - is_pastor 세션 값 확인
+    is_pastor = session.get('is_pastor', False)
+    
+    # 세션 기반 인증 또는 Basic Auth 둘 중 하나라도 통과하면 삭제 허용
+    if not (is_pastor or verify_auth()):
+        flash("파일 삭제를 위해 관리자 권한이 필요합니다.", "warning")
+        return redirect(url_for('main.login', next=request.path))
+        
+    try:
+        file_to_delete = PDFFile.query.get_or_404(file_id)
+        filename = file_to_delete.filename  # 삭제 전 파일명 저장
+        
+        # 디스크에서 파일 삭제
+        filepath = os.path.join(Config.UPLOAD_FOLDER, file_to_delete.disk_filename)
+        if os.path.exists(filepath):
+            os.remove(filepath)
+            
+        # DB에서 레코드 삭제
+        db.session.delete(file_to_delete)
+        db.session.commit()
+        
+        flash(f"파일 '{filename}'이 성공적으로 삭제되었습니다.", "success")
+        return redirect(url_for("main.upload_file"))
+        
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(f"파일 삭제 중 오류 발생: {str(e)}")
+        flash(f"파일 삭제 중 오류가 발생했습니다: {str(e)}", "danger")
+        return redirect(url_for("main.upload_file"))
 
 @bp.route("/update-zoom-link", methods=["POST"])
 @requires_auth()
@@ -416,3 +493,63 @@ def delete_content(content_id) -> Any:
     db.session.commit()
     flash("콘텐츠가 삭제되었습니다.", "success")
     return redirect(url_for("main.manage_content"))
+
+
+# 메시지 관련 라우트
+@bp.route("/message", methods=["GET", "POST"])
+def send_message():
+    """메시지 남기기"""
+    if request.method == "POST":
+        name = request.form.get("name", "").strip()
+        email = request.form.get("email", "").strip() or None
+        subject = request.form.get("subject", "").strip()
+        content = request.form.get("content", "").strip()
+        
+        if not name or not subject or not content:
+            flash("이름, 제목, 내용은 필수 입력 항목입니다.", "danger")
+            return redirect(url_for("main.send_message"))
+            
+        message = Message(name=name, email=email, subject=subject, content=content)
+        db.session.add(message)
+        db.session.commit()
+        
+        flash("메시지가 성공적으로 전송되었습니다. 목사님께서 확인 후 연락드릴 것입니다.", "success")
+        return redirect(url_for("main.index"))
+        
+    return render_template("message.html")
+
+
+@bp.route("/messages")
+@requires_auth()
+def messages():
+    """메시지 목록 보기 (관리자 전용)"""
+    messages_list = Message.query.order_by(Message.created_at.desc()).all()
+    unread_count = Message.query.filter_by(is_read=False).count()
+    
+    return render_template("message_list.html", messages_list=messages_list, unread_count=unread_count)
+
+
+@bp.route("/message/<int:message_id>")
+@requires_auth()
+def view_message(message_id):
+    """메시지 상세 보기 (관리자 전용)"""
+    message = Message.query.get_or_404(message_id)
+    
+    # 읽음 상태로 변경
+    if not message.is_read:
+        message.is_read = True
+        db.session.commit()
+    
+    return render_template("view_message.html", message=message)
+
+
+@bp.route("/message/delete/<int:message_id>", methods=["POST"])
+@requires_auth()
+def delete_message(message_id):
+    """메시지 삭제 (관리자 전용)"""
+    message = Message.query.get_or_404(message_id)
+    db.session.delete(message)
+    db.session.commit()
+    
+    flash("메시지가 삭제되었습니다.", "success")
+    return redirect(url_for("main.messages"))
