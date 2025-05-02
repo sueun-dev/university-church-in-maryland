@@ -1,7 +1,7 @@
 # University Church Web Application
 
 This project is a Flask-based web application for University Church, designed to facilitate communication, resource sharing, and community engagement within the church community. It provides an easy-to-use platform with robust features tailored for both general users and administrators.
-
+https://www.uchurchmd.org/
 ## Features
 
 - **User Authentication**: Secure login system with built-in protection against excessive login attempts and brute-force attacks.
