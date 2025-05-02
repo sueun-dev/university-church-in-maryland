@@ -25,6 +25,9 @@ def create_app() -> Flask:
     )
     app.config.from_object(Config)
 
+    # ✅ Fix: Set max upload size to 50MB
+    app.config['MAX_CONTENT_LENGTH'] = 50 * 1024 * 1024  # 50 MB upload limit
+
     # Initialize extensions with the app
     db.init_app(app)
     migrate.init_app(app, db)
@@ -36,7 +39,7 @@ def create_app() -> Flask:
         from markupsafe import Markup
         import markdown
         import re
-        
+
         # YouTube 링크를 임베드로 변환
         def replace_youtube_links(text):
             # YouTube URL 패턴 (여러 형식 지원)
@@ -44,15 +47,15 @@ def create_app() -> Flask:
                 r'https?://(?:www\.)?youtube\.com/watch\?v=([\w-]+)(?:&\S*)?',
                 r'https?://(?:www\.)?youtu\.be/([\w-]+)(?:\?\S*)?'
             ]
-            
+
             for pattern in patterns:
                 text = re.sub(
                     pattern,
-                    r'<div class="ratio ratio-16x9 mb-3"><iframe src="https://www.youtube.com/embed/\1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>',
+                    r'<div class="ratio ratio-16x9 mb-3"><iframe src="https://www.youtube.com/embed/\1" frameborder="0" allowfullscreen></iframe></div>',
                     text
                 )
             return text
-            
+
         # YouTube 링크 치환 후 마크다운 변환
         processed_text = replace_youtube_links(text)
         return Markup(markdown.markdown(processed_text, extensions=['extra', 'nl2br']))

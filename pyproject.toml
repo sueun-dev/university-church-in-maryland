@@ -20,7 +20,8 @@ dependencies = [
     "psycopg2-binary (>=2.9.10,<3.0.0)",
     "flask-socketio (>=5.5.1,<6.0.0)",
     "eventlet (>=0.39.1,<0.40.0)",
-    "flask-limiter (>=3.12,<4.0)"
+    "flask-limiter (>=3.12,<4.0)",
+    "markdown (>=3.8,<4.0)"
 ]
 
 
