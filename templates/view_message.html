@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+{% block title %}메시지 보기 - University Church{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <div class="row">
+    <div class="col-lg-8 mx-auto">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>메시지 보기</h2>
+        <a href="{{ url_for('main.messages') }}" class="btn btn-outline-secondary">목록으로 돌아가기</a>
+      </div>
+      
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          {% for category, message in messages %}
+            <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+              {{ message }}
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+      
+      <div class="card shadow-sm mb-4">
+        <div class="card-header bg-light">
+          <div class="d-flex justify-content-between align-items-center">
+            <h5 class="card-title mb-0">{{ message.subject }}</h5>
+            <span class="badge {% if message.is_read %}bg-success{% else %}bg-danger{% endif %}">
+              {{ message.is_read and "읽음" or "읽지 않음" }}
+            </span>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="mb-3">
+            <div class="row">
+              <div class="col-md-6">
+                <strong>보낸 사람:</strong> {{ message.name }}
+              </div>
+              <div class="col-md-6 text-md-end">
+                <strong>날짜:</strong> {{ message.created_at.strftime('%Y-%m-%d %H:%M') }}
+              </div>
+            </div>
+            {% if message.email %}
+            <div class="mt-2">
+              <strong>이메일:</strong> {{ message.email }}
+            </div>
+            {% endif %}
+          </div>
+          <hr>
+          <div class="message-content">
+            {{ message.content|nl2br }}
+          </div>
+        </div>
+        <div class="card-footer bg-light">
+          <div class="d-flex justify-content-end">
+            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">삭제</button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 삭제 확인 모달 -->
+      <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="deleteModalLabel">메시지 삭제</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              정말로 이 메시지를 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+              <form action="{{ url_for('main.delete_message', message_id=message.id) }}" method="POST" class="d-inline">
+                <button type="submit" class="btn btn-danger">삭제</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

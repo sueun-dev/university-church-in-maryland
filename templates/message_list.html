@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+{% block title %}메시지 관리 - University Church{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <h2 class="mb-4">목사님께 보낸 메시지</h2>
+  
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+  
+  {% if messages_list %}
+    <div class="card shadow-sm mb-4">
+      <div class="card-header bg-light">
+        <div class="row align-items-center">
+          <div class="col">
+            <strong>총 {{ messages_list|length }}개의 메시지</strong>
+          </div>
+          <div class="col-auto">
+            <span class="badge bg-danger me-2">읽지 않음: {{ unread_count }}</span>
+            <span class="badge bg-success">읽음: {{ messages_list|length - unread_count }}</span>
+          </div>
+        </div>
+      </div>
+      <div class="table-responsive">
+        <table class="table table-hover mb-0">
+          <thead class="table-light">
+            <tr>
+              <th>상태</th>
+              <th>이름</th>
+              <th>제목</th>
+              <th>이메일</th>
+              <th>날짜</th>
+              <th>작업</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for message in messages_list %}
+            <tr class="{% if not message.is_read %}table-warning{% endif %}">
+              <td>
+                {% if message.is_read %}
+                  <span class="badge bg-success">읽음</span>
+                {% else %}
+                  <span class="badge bg-danger">읽지 않음</span>
+                {% endif %}
+              </td>
+              <td>{{ message.name }}</td>
+              <td>
+                <a href="{{ url_for('main.view_message', message_id=message.id) }}" class="text-decoration-none">
+                  {{ message.subject }}
+                </a>
+              </td>
+              <td>
+                {% if message.email %}
+                  {{ message.email }}
+                {% else %}
+                  <small class="text-muted">없음</small>
+                {% endif %}
+              </td>
+              <td>{{ message.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+              <td>
+                <div class="btn-group btn-group-sm" role="group">
+                  <a href="{{ url_for('main.view_message', message_id=message.id) }}" class="btn btn-outline-primary">보기</a>
+                  <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal{{ message.id }}">삭제</button>
+                </div>
+                <!-- 삭제 확인 모달 -->
+                <div class="modal fade" id="deleteModal{{ message.id }}" tabindex="-1" aria-labelledby="deleteModalLabel{{ message.id }}" aria-hidden="true">
+                  <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="deleteModalLabel{{ message.id }}">메시지 삭제</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                      </div>
+                      <div class="modal-body">
+                        정말로 이 메시지를 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+                        <form action="{{ url_for('main.delete_message', message_id=message.id) }}" method="POST" class="d-inline">
+                          <button type="submit" class="btn btn-danger">삭제</button>
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  {% else %}
+    <div class="alert alert-info">
+      <p class="mb-0">받은 메시지가 없습니다.</p>
+    </div>
+  {% endif %}
+  
+  <a href="{{ url_for('main.index') }}" class="btn btn-secondary">홈으로 돌아가기</a>
+</div>
+{% endblock %}

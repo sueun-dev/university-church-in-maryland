@@ -122,6 +122,13 @@
               <!-- 자료공유 링크: upload_file 엔드포인트 사용 -->
               <a href="{{ url_for('main.upload_file') }}" class="nav-item nav-link {% if active_page == 'upload' %}active{% endif %}">자료공유</a>
               {% if session.get('is_pastor') %}
+                <!-- 받은 메시지 메뉴 - 목사님만 볼 수 있음 -->
+                <a href="{{ url_for('main.messages') }}" class="nav-item nav-link {% if active_page == 'messages' %}active{% endif %}">
+                  받은 메시지
+                  {% if unread_count and unread_count > 0 %}
+                  <span class="badge bg-danger">{{ unread_count }}</span>
+                  {% endif %}
+                </a>
                 <a href="{{ url_for('main.logout') }}" class="nav-item nav-link">Logout</a>
               {% else %}
                 <a href="{{ url_for('main.login', next=request.url) }}" class="nav-item nav-link">관리자 로그인</a>
@@ -149,7 +156,6 @@
           <div class="col-lg-4">
             <h5>Get In Touch</h5>
             <p><i class="fa fa-map-marker-alt me-3"></i>8108 54th Ave. College Park, MD 20740</p>
-            <p><i class="fa fa-envelope me-3"></i>info@uchurchmd.org</p>
           </div>
           <div class="col-lg-4">
             <h5>Version Info</h5>
