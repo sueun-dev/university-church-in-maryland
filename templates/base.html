@@ -103,8 +103,7 @@
             <div class="icon p-1 me-4">
               <img class="img-fluid" src="https://images.squarespace-cdn.com/content/v1/6732bd65ccc0e358adb9002a/59243f07-253d-4cf4-b918-60bb34cb810b/ucmlogo.png%3Fformat=1500w" alt="Church Logo" style="width: 50px; height: 50px;" />
             </div>
-            <h1 class="m-0 text-primary d-none d-md-block" style="font-size: 18px;">University Church</h1>
-            <h1 class="m-0 text-primary d-block d-md-none" style="font-size: 18px;">Uni Church</h1>
+            <h1 class="m-0 text-primary" style="font-size: 18px;">University Church</h1>
           </a>
           <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarCollapse"><span class="navbar-toggler-icon"></span></button>
           <div class="collapse navbar-collapse" id="navbarCollapse">
@@ -133,6 +132,7 @@
               {% else %}
                 <a href="{{ url_for('main.login', next=request.url) }}" class="nav-item nav-link">관리자 로그인</a>
               {% endif %}
+              <a href="https://uchurchmd-org.translate.goog/?_x_tr_sl=auto&_x_tr_tl=en" class="btn btn-outline-success me-2">ENGLISH</a>
               <a href="https://www.youtube.com/@uchurchmd" class="btn btn-outline-red me-2">UChurchMD TV</a>
               <a href="https://universitychurchmd.org" class="btn btn-outline-primary" target="_blank">이전 홈페이지</a>
             </div>

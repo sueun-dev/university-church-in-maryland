@@ -116,19 +116,13 @@
     <div class="container">
       <div class="text-center mx-auto mb-5 wow fadeInUp" data-wow-delay="0.1s" style="max-width: 600px;">
         <h1 class="mb-3">Contact Us</h1>
-        <p>8108 54th Ave. College Park, MD 20740</p>
+        <p>{{ get_content("main_contact_address", "8108 54th Ave. College Park, MD 20740") }}</p>
       </div>
       <div class="row g-4 justify-content-center">
         <div class="col-lg-6 text-center wow fadeIn" data-wow-delay="0.5s">
           <div class="d-flex flex-wrap justify-content-center gap-3">
-            <a href="https://www.uchurchmd.org/" class="btn btn-primary py-3 px-4" target="_blank">
-              <i class="fab fa-instagram me-2"></i>인스타그램
-            </a>
             <a href="#" class="btn btn-secondary py-3 px-4" onclick="copyEmailToClipboard(); return false;">
               <i class="fa fa-envelope me-2"></i>이메일
-            </a>
-            <a class="btn btn-primary py-3 px-4" href="https://open.kakao.com/o/g3B2xVwf" target="_blank">
-              카카오톡 오픈채팅
             </a>
           </div>
         </div>

@@ -165,37 +165,78 @@ def church_life():
 @bp.route("/delete_post/<int:post_id>", methods=["POST"])
 @requires_auth()
 def delete_post(post_id: int) -> Any:
-    try:
-        post = Post.query.get_or_404(post_id)
-        category = post.category
-        
-        # 게시글 삭제 전에 session flush를 수행하여 트랜잭션 상태 확인
-        db.session.flush()
-        
-        # 게시글 삭제 실행
-        db.session.delete(post)
-        db.session.commit()
-        flash("게시글이 삭제되었습니다.", "success")
+    """Delete a post based on its ID.
 
-        # Dynamic redirect based on category
-        redirect_map = {
-            "intro": "main.intro",
-            "sermons": "main.sermons",
-            "bible_study": "main.bible_study",
-            "church_life": "main.church_life",
-            None: "main.read_posts",
-        }
-        return redirect(url_for(redirect_map.get(category, "main.read_posts")))
-    except Exception as e:
-        # 오류 발생 시 롤백 및 에러 메시지 표시
-        db.session.rollback()
-        flash(f"게시글 삭제 중 오류가 발생했습니다: {str(e)}", "danger")
-        current_app.logger.error(f"Error deleting post {post_id}: {str(e)}")
-        
-        # 오류 발생 시 이전 페이지로 리디렉션
-        if category:
-            return redirect(url_for(f"main.{category}"))
+    Args:
+        post_id: The ID of the post to delete.
+
+    Returns:
+        Redirect to the appropriate page after deletion.
+    """
+    # Require login to delete posts
+    if not session.get("is_pastor"):
+        flash("권한이 없습니다.", "danger")
+        return redirect(url_for("main.index"))
+
+    post = Post.query.get_or_404(post_id)
+    category = post.category
+    
+    # Delete the post
+    db.session.delete(post)
+    db.session.commit()
+    flash("게시글이 삭제되었습니다.", "success")
+    
+    # Determine which page to return to based on post category
+    if category == "intro":
+        return redirect(url_for("main.intro"))
+    elif category == "sermons":
+        return redirect(url_for("main.sermons"))
+    elif category == "bible_study":
+        return redirect(url_for("main.bible_study"))
+    elif category == "church_life":
+        return redirect(url_for("main.church_life"))
+    else:
         return redirect(url_for("main.read_posts"))
+
+
+@bp.route("/edit-post/<int:post_id>", methods=["GET", "POST"])
+@requires_auth()
+def edit_post(post_id: int) -> Any:
+    """Edit a post based on its ID.
+
+    Args:
+        post_id: The ID of the post to edit.
+
+    Returns:
+        Edit form or redirect to the appropriate page after edit.
+    """
+    post = Post.query.get_or_404(post_id)
+    
+    if request.method == "POST":
+        title = request.form.get("title", "").strip()
+        content = request.form.get("content", "").strip()
+        
+        if title and content:
+            post.title = title
+            post.content = content
+            db.session.commit()
+            flash("게시글이 성공적으로 수정되었습니다.", "success")
+            
+            # Determine which page to return to based on post category
+            if post.category == "intro":
+                return redirect(url_for("main.intro"))
+            elif post.category == "sermons":
+                return redirect(url_for("main.sermons"))
+            elif post.category == "bible_study":
+                return redirect(url_for("main.bible_study"))
+            elif post.category == "church_life":
+                return redirect(url_for("main.church_life"))
+            else:
+                return redirect(url_for("main.read_posts"))
+        else:
+            flash("제목과 내용을 모두 입력해주세요.", "danger")
+    
+    return render_template("edit_post.html", post=post)
 
 
 @bp.route("/upload", methods=["GET", "POST"])
@@ -419,21 +460,21 @@ def add_content():
     # 미리 정의된 페이지 영역별 콘텐츠 옵션
     content_options = [
         {
-            "category": "main",
             "category_name": "메인 페이지",
             "options": [
-                {"key": "main_top_welcome", "title": "메인 페이지 - 상단 환영 메시지"},
-                {"key": "main_church_intro", "title": "메인 페이지 - 교회 간략 소개"},
-                {"key": "main_vision_statement", "title": "메인 페이지 - 교회 비전"},
+                {"key": "main_banner", "title": "메인 배너 문구 - 메인 페이지 상단 배너에 표시"},
+                {"key": "main_welcome", "title": "환영 메시지 - 메인 페이지 중앙에 표시"},
+                {"key": "main_about", "title": "간략한 교회 소개 - 메인 페이지 '교회 소개' 섹션에 표시"},
+                {"key": "main_contact_address", "title": "교회 주소 - Contact Us 섹션에 표시 (현재: 8108 54th Ave. College Park, MD 20740)"}
             ]
         },
         {
-            "category": "about",
-            "category_name": "교회 소개 페이지",
+            "category_name": "교회 소개",
             "options": [
-                {"key": "about_page_intro", "title": "교회 소개 페이지 - 상세 소개"},
-                {"key": "about_page_pastor_message", "title": "교회 소개 페이지 - 목사님 인사말"},
-                {"key": "about_page_history", "title": "교회 소개 페이지 - 교회 역사"},
+                {"key": "church_history", "title": "교회 역사"},
+                {"key": "church_vision", "title": "교회 비전"},
+                {"key": "church_beliefs", "title": "신앙 고백"},
+                {"key": "church_values", "title": "핵심 가치"}
             ]
         },
         {
