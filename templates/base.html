@@ -6,8 +6,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
   <!-- SEO Meta Tags -->
-  <meta name="keywords" content="{% block meta_keywords %}유니버시티 교회, University Church, 메릴랜드 대학, 신앙 공동체, 교회, 예배, 성경 공부{% endblock %}" />
-  <meta name="description" content="{% block meta_description %}유니버시티 교회 공식 홈페이지. 50여년간 메릴랜드 대학 가족과 지역 이민사회가 함께 세워 온 신앙 공동체.{% endblock %}" />
+  <meta name="keywords" content="{% block meta_keywords %}{{ get_content('meta_default_keywords') }}{% endblock %}" />
+  <meta name="description" content="{% block meta_description %}{{ get_content('meta_default_description') }}{% endblock %}" />
 
   <!-- Open Graph Meta Tags -->
   <meta property="og:image" content="https://images.squarespace-cdn.com/content/v1/6732bd65ccc0e358adb9002a/59243f07-253d-4cf4-b918-60bb34cb810b/ucmlogo.png%3Fformat=1500w" />
@@ -103,38 +103,41 @@
             <div class="icon p-1 me-4">
               <img class="img-fluid" src="https://images.squarespace-cdn.com/content/v1/6732bd65ccc0e358adb9002a/59243f07-253d-4cf4-b918-60bb34cb810b/ucmlogo.png%3Fformat=1500w" alt="Church Logo" style="width: 50px; height: 50px;" />
             </div>
-            <h1 class="m-0 text-primary" style="font-size: 18px;">University Church</h1>
+            <h1 class="m-0 text-primary" style="font-size: 18px;">{{ get_content('nav_brand_title', 'University Church') }}</h1>
           </a>
           <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarCollapse"><span class="navbar-toggler-icon"></span></button>
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <div class="navbar-nav ms-auto">
-              <a href="{{ url_for('main.index') }}" class="nav-item nav-link {% if active_page == 'home' %}active{% endif %}">Home</a>
-              <a href="{{ url_for('main.about') }}" class="nav-item nav-link {% if active_page == 'about' %}active{% endif %}">교회 소개</a>
-              <a href="{{ url_for('main.intro') }}" class="nav-item nav-link {% if active_page == 'intro' %}active{% endif %}">기독교 소개</a>
-              <a href="{{ url_for('main.sermons') }}" class="nav-item nav-link {% if active_page == 'sermons' %}active{% endif %}">설교</a>
-              <a href="{{ url_for('main.bible_study') }}" class="nav-item nav-link {% if active_page == 'bible_study' %}active{% endif %}">성경 공부</a>
-              <a href="{{ url_for('main.church_life') }}" class="nav-item nav-link {% if active_page == 'church_life' %}active{% endif %}">교회 생활</a>
+              <a href="{{ url_for('main.index') }}" class="nav-item nav-link {% if active_page == 'home' %}active{% endif %}">{{ get_content('nav_home_label', 'Home') }}</a>
+              <a href="{{ url_for('main.about') }}" class="nav-item nav-link {% if active_page == 'about' %}active{% endif %}">{{ get_content('nav_about_label', '교회 소개') }}</a>
+              <a href="{{ url_for('main.intro') }}" class="nav-item nav-link {% if active_page == 'intro' %}active{% endif %}">{{ get_content('nav_intro_label', '기독교 소개') }}</a>
+              <a href="{{ url_for('main.sermons') }}" class="nav-item nav-link {% if active_page == 'sermons' %}active{% endif %}">{{ get_content('nav_sermons_label', '설교') }}</a>
+              <a href="{{ url_for('main.bible_study') }}" class="nav-item nav-link {% if active_page == 'bible_study' %}active{% endif %}">{{ get_content('nav_bible_study_label', '성경 공부') }}</a>
+              <a href="{{ url_for('main.church_life') }}" class="nav-item nav-link {% if active_page == 'church_life' %}active{% endif %}">{{ get_content('nav_church_life_label', '교회 생활') }}</a>
               <!-- FIXME! -->
               <!-- <a href="{{ url_for('main.read_posts') }}" class="nav-item nav-link {% if active_page == 'read' %}active{% endif %}">게시글</a> -->
               
               <!-- 게시글 링크 수정: read_posts 엔드포인트 사용 -->
               <!-- 자료공유 링크: upload_file 엔드포인트 사용 -->
-              <a href="{{ url_for('main.upload_file') }}" class="nav-item nav-link {% if active_page == 'upload' %}active{% endif %}">자료공유</a>
+              <a href="{{ url_for('main.upload_file') }}" class="nav-item nav-link {% if active_page == 'upload' %}active{% endif %}">{{ get_content('nav_resources_label', '자료공유') }}</a>
               {% if session.get('is_pastor') %}
+                <a href="{{ url_for('main.manage_content') }}" class="nav-item nav-link {% if active_page == 'manage_content' %}active{% endif %}">
+                  {{ get_content('nav_manage_content_label', '콘텐츠 관리') }}
+                </a>
                 <!-- 받은 메시지 메뉴 - 목사님만 볼 수 있음 -->
                 <a href="{{ url_for('main.messages') }}" class="nav-item nav-link {% if active_page == 'messages' %}active{% endif %}">
-                  받은 메시지
+                  {{ get_content('nav_messages_label', '받은 메시지') }}
                   {% if unread_count and unread_count > 0 %}
                   <span class="badge bg-danger">{{ unread_count }}</span>
                   {% endif %}
                 </a>
-                <a href="{{ url_for('main.logout') }}" class="nav-item nav-link">Logout</a>
+                <a href="{{ url_for('main.logout') }}" class="nav-item nav-link">{{ get_content('nav_logout_label', 'Logout') }}</a>
               {% else %}
-                <a href="{{ url_for('main.login', next=request.url) }}" class="nav-item nav-link">관리자 로그인</a>
+                <a href="{{ url_for('main.login', next=request.url) }}" class="nav-item nav-link">{{ get_content('nav_login_label', '관리자 로그인') }}</a>
               {% endif %}
-              <a href="https://uchurchmd-org.translate.goog/?_x_tr_sl=auto&_x_tr_tl=en" class="btn btn-outline-success me-2">ENGLISH</a>
-              <a href="https://www.youtube.com/@uchurchmd" class="btn btn-outline-red me-2">UChurchMD TV</a>
-              <a href="https://universitychurchmd.org" class="btn btn-outline-primary" target="_blank">이전 홈페이지</a>
+              <a href="https://uchurchmd-org.translate.goog/?_x_tr_sl=auto&_x_tr_tl=en" class="btn btn-outline-success me-2">{{ get_content('nav_english_label', 'ENGLISH') }}</a>
+              <a href="https://www.youtube.com/@uchurchmd" class="btn btn-outline-red me-2">{{ get_content('nav_youtube_label', 'UChurchMD TV') }}</a>
+              <a href="https://universitychurchmd.org" class="btn btn-outline-primary" target="_blank">{{ get_content('nav_legacy_label', '이전 홈페이지') }}</a>
             </div>
           </div>
         </nav>
@@ -154,17 +157,19 @@
       <div class="container py-2">
         <div class="row g-5">
           <div class="col-lg-4">
-            <h5>Get In Touch</h5>
-            <p><i class="fa fa-map-marker-alt me-3"></i>8108 54th Ave. College Park, MD 20740</p>
+            <h5>{{ get_content('footer_contact_heading', 'Get In Touch') }}</h5>
+            <p><i class="fa fa-map-marker-alt me-3"></i>{{ get_content('footer_contact_address', '8108 54th Ave. College Park, MD 20740')|nl2br|safe }}</p>
           </div>
           <div class="col-lg-4">
-            <h5>Version Info</h5>
-            <p>Current Version: 1.0.0</p>
-            <p>Developed By <a href="https://github.com/sueun-dev">Sueun Cho</a></p>
+            <h5>{{ get_content('footer_version_heading', 'Version Info') }}</h5>
+            <p>{{ get_content('footer_version_text', 'Current Version: 1.0.0') }}</p>
+            <div class="small">
+              {{ get_content('footer_version_credit')|markdown }}
+            </div>
           </div>
           <div class="col-lg-4">
-            <h5>Legal</h5>
-            <p>Unauthorized use of content prohibited.</p>
+            <h5>{{ get_content('footer_legal_heading', 'Legal') }}</h5>
+            <p>{{ get_content('footer_legal_notice', 'Unauthorized use of content prohibited.') }}</p>
           </div>
         </div>
       </div>
@@ -184,7 +189,6 @@
     {% endblock %}
   </body>
 </html>
-
 
 
 

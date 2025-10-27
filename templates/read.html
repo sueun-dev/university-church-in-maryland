@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% set active_page = 'read' %}
-{% block title %}게시글 및 채팅{% endblock %}
+{% block title %}{{ get_content('board_general_page_title', '게시글 및 채팅') }}{% endblock %}
 
 {% block css %}
   {{ super() }}
@@ -9,35 +9,35 @@
 
 {% block content %}
 <div class="container mt-4">
-  <h1 class="mb-4">게시글</h1>
+  <h1 class="mb-4">{{ get_content('board_general_heading', '게시글') }}</h1>
   
   {% if is_pastor %}
   <!-- Pastor: Post Registration Form -->
   <div class="card mb-4">
-    <div class="card-header">새 게시글 작성</div>
+    <div class="card-header">{{ get_content('board_general_form_heading', '새 게시글 작성') }}</div>
     <div class="card-body">
       <form method="POST" action="{{ url_for('main.read_posts') }}">
         <div class="mb-3">
-          <label for="title" class="form-label">제목</label>
+          <label for="title" class="form-label">{{ get_content('board_general_title_label', '제목') }}</label>
           <input type="text" name="title" id="title" class="form-control" required>
         </div>
         <div class="mb-3">
-          <label for="content" class="form-label">내용</label>
+          <label for="content" class="form-label">{{ get_content('board_general_content_label', '내용') }}</label>
           <textarea name="content" id="content" class="form-control" rows="5" required></textarea>
         </div>
-        <button type="submit" class="btn btn-primary">게시글 등록</button>
+        <button type="submit" class="btn btn-primary">{{ get_content('board_general_submit_label', '게시글 등록') }}</button>
       </form>
     </div>
   </div>
   {% else %}
     <div class="alert alert-info">
-      게시글 등록 및 삭제는 관리자 계정으로 로그인 후 이용 가능합니다.
-      <a href="{{ url_for('main.login', next=request.url) }}" class="alert-link">로그인하기</a>
+      {{ get_content('board_general_guest_notice', '게시글 등록 및 삭제는 관리자 계정으로 로그인 후 이용 가능합니다.') }}
+      <a href="{{ url_for('main.login', next=request.url) }}" class="alert-link">{{ get_content('board_general_guest_login_link', '로그인하기') }}</a>
     </div>
   {% endif %}
   
   <!-- Posts List -->
-  <h2>기존 게시글</h2>
+  <h2>{{ get_content('board_general_posts_heading', '기존 게시글') }}</h2>
   {% if posts %}
     {% for post in posts %}
       <div class="card mb-3">
@@ -45,20 +45,20 @@
           <h5 class="card-title">{{ post.title }}</h5>
           <div class="card-text post-content">{{ post.content|markdown }}</div>
           <p class="card-text">
-            <small class="text-muted">작성일: {{ post.created_at.strftime('%Y-%m-%d %H:%M') }}</small>
+            <small class="text-muted">{{ get_content('board_general_post_date_label', '작성일') }}: {{ post.created_at.strftime('%Y-%m-%d %H:%M') }}</small>
           </p>
           {% if is_pastor %}
           <!-- Delete button (only for pastors) -->
           <form method="POST" action="{{ url_for('main.delete_post', post_id=post.id) }}"
                 onsubmit="return confirm('이 게시글을 삭제하시겠습니까?');">
-            <button type="submit" class="btn btn-danger btn-sm">삭제</button>
+            <button type="submit" class="btn btn-danger btn-sm">{{ get_content('board_delete_button_label', '삭제') }}</button>
           </form>
           {% endif %}
         </div>
       </div>
     {% endfor %}
   {% else %}
-    <p>아직 등록된 게시글이 없습니다.</p>
+    <p>{{ get_content('board_empty_message', '게시글이 없습니다.') }}</p>
   {% endif %}
 </div>
 

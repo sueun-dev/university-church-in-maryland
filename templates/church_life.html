@@ -1,19 +1,19 @@
 {% extends 'base.html' %}
 {% set active_page = 'church_life' %}
-{% block title %}교회 생활{% endblock %}
+{% block title %}{{ get_content('board_church_life_page_heading', '교회 생활 게시판') }}{% endblock %}
 
 {% block content %}
 <div class="container mt-4">
-  <h1 class="mb-4">교회 생활 게시판</h1>
+  <h1 class="mb-4">{{ get_content('board_church_life_page_heading', '교회 생활 게시판') }}</h1>
 
   {% if is_pastor %}
   <div class="card mb-4">
-    <div class="card-header">게시글 작성 (교회 생활)</div>
+    <div class="card-header">{{ get_content('board_church_life_form_heading', '게시글 작성 (교회 생활)') }}</div>
     <div class="card-body">
       <form method="POST">
-        <input type="text" name="title" class="form-control mb-3" placeholder="제목" required>
-        <textarea name="content" class="form-control mb-3" rows="5" placeholder="내용 (마크다운 형식 지원: **굵게**, *기울임*, # 제목, ## 부제목, - 목록, 등)" required></textarea>
-        <button class="btn btn-primary">등록하기</button>
+        <input type="text" name="title" class="form-control mb-3" placeholder="{{ get_content('board_form_title_placeholder', '제목') }}" required>
+        <textarea name="content" class="form-control mb-3" rows="5" placeholder="{{ get_content('board_form_content_placeholder') }}" required></textarea>
+        <button class="btn btn-primary">{{ get_content('board_form_submit_label', '등록하기') }}</button>
       </form>
     </div>
   </div>
@@ -47,7 +47,7 @@
     {% endfor %}
   </div>
   {% else %}
-  <p>게시글이 없습니다.</p>
+  <p>{{ get_content('board_empty_message', '게시글이 없습니다.') }}</p>
   {% endif %}
   
   {% if pagination.pages > 1 %}

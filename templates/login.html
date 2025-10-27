@@ -1,18 +1,18 @@
 {% extends 'base.html' %}
-{% block title %}관리자 로그인{% endblock %}
+{% block title %}{{ get_content('login_page_title', '관리자 로그인') }}{% endblock %}
 {% block content %}
 <div class="container mt-4">
-  <h1>관리자 로그인</h1>
+  <h1>{{ get_content('login_heading', '관리자 로그인') }}</h1>
   <form method="POST" action="{{ url_for('main.login', next=request.args.get('next')) }}">
     <div class="mb-3">
-      <label for="username" class="form-label">아이디</label>
+      <label for="username" class="form-label">{{ get_content('login_username_label', '아이디') }}</label>
       <input type="text" name="username" id="username" class="form-control" required>
     </div>
     <div class="mb-3">
-      <label for="password" class="form-label">비밀번호</label>
+      <label for="password" class="form-label">{{ get_content('login_password_label', '비밀번호') }}</label>
       <input type="password" name="password" id="password" class="form-control" required>
     </div>
-    <button type="submit" class="btn btn-primary">로그인</button>
+    <button type="submit" class="btn btn-primary">{{ get_content('login_submit_label', '로그인') }}</button>
   </form>
 </div>
 {% endblock %}

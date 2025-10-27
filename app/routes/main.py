@@ -15,8 +15,9 @@ from markupsafe import Markup
 from .. import db
 from ..models import PDFFile, Post, ZoomLink, SiteContent, Message
 from ..config import Config
-from ..decorators import check_auth, authenticate, requires_auth
+from ..decorators import check_auth, requires_auth
 from ..utils import allowed_file
+from ..site_content_schema import iter_sections, get_field, get_default_for_key
 
 # nl2br 필터 정의: 줄바꿈 문자를 HTML <br> 태그로 변환
 def nl2br(value):
@@ -28,10 +29,39 @@ bp = Blueprint("main", __name__)
 
 
 # 템플릿에서 사용할 콘텐츠 가져오기 함수
-def get_content(key, default=""):
+def get_content(key, default=None):
     """키를 기반으로 콘텐츠를 가져오는 유틸리티 함수"""
     content = SiteContent.query.filter_by(key=key).first()
-    return content.content if content else default
+    if content:
+        return content.content
+    if default is not None:
+        return default
+    return get_default_for_key(key)
+
+
+def ensure_site_content_defaults() -> None:
+    """Ensure every defined site content key exists in the database."""
+    existing_items = {item.key: item for item in SiteContent.query.all()}
+    changed = False
+
+    for section in iter_sections():
+        for field in section.fields:
+            record = existing_items.get(field.key)
+            if record is None:
+                new_record = SiteContent(
+                    key=field.key,
+                    title=field.label,
+                    content=field.default,
+                )
+                db.session.add(new_record)
+                existing_items[field.key] = new_record
+                changed = True
+            elif record.title != field.label:
+                record.title = field.label
+                changed = True
+
+    if changed:
+        db.session.commit()
 
 
 # 모든 템플릿에서 get_content 함수 사용 가능하도록 설정
@@ -424,116 +454,60 @@ def logout() -> Any:
     return redirect(url_for("main.index"))
 
 
-@bp.route("/manage-content")
+@bp.route("/manage-content", methods=["GET", "POST"])
 @requires_auth()
 def manage_content() -> Any:
-    """콘텐츠 관리 페이지"""
-    contents = SiteContent.query.all()
-    return render_template("manage_content.html", contents=contents)
+    """새로운 콘텐츠 관리 페이지."""
+    ensure_site_content_defaults()
 
-
-@bp.route("/edit-content/<int:content_id>", methods=["GET", "POST"])
-@requires_auth()
-def edit_content(content_id) -> Any:
-    """콘텐츠 편집 페이지"""
-    content = SiteContent.query.get_or_404(content_id)
-    
     if request.method == "POST":
-        title = request.form.get("title", "").strip()
-        content_text = request.form.get("content", "").strip()
-        
-        if title and content_text:
-            content.title = title
-            content.content = content_text
-            db.session.commit()
-            flash("콘텐츠가 성공적으로 업데이트되었습니다.", "success")
+        key = (request.form.get("key") or "").strip()
+        new_value = request.form.get("content") or ""
+
+        field_meta = get_field(key) if key else None
+        if field_meta is None:
+            flash("수정할 항목을 찾을 수 없습니다.", "danger")
             return redirect(url_for("main.manage_content"))
+
+        content_record = SiteContent.query.filter_by(key=key).first()
+        if content_record is None:
+            content_record = SiteContent(
+                key=key,
+                title=field_meta.label,
+                content=new_value,
+            )
+            db.session.add(content_record)
         else:
-            flash("제목과 내용을 모두 입력해주세요.", "danger")
-    
-    return render_template("edit_content.html", content=content)
+            content_record.title = field_meta.label
+            content_record.content = new_value
 
-
-@bp.route("/add-content", methods=["GET", "POST"])
-@requires_auth()
-def add_content():
-    # 미리 정의된 페이지 영역별 콘텐츠 옵션
-    content_options = [
-        {
-            "category_name": "메인 페이지",
-            "options": [
-                {"key": "main_banner", "title": "메인 배너 문구 - 메인 페이지 상단 배너에 표시"},
-                {"key": "main_welcome", "title": "환영 메시지 - 메인 페이지 중앙에 표시"},
-                {"key": "main_about", "title": "간략한 교회 소개 - 메인 페이지 '교회 소개' 섹션에 표시"},
-                {"key": "main_contact_address", "title": "교회 주소 - Contact Us 섹션에 표시 (현재: 8108 54th Ave. College Park, MD 20740)"}
-            ]
-        },
-        {
-            "category_name": "교회 소개",
-            "options": [
-                {"key": "church_history", "title": "교회 역사"},
-                {"key": "church_vision", "title": "교회 비전"},
-                {"key": "church_beliefs", "title": "신앙 고백"},
-                {"key": "church_values", "title": "핵심 가치"}
-            ]
-        },
-        {
-            "category": "global",
-            "category_name": "공통 요소",
-            "options": [
-                {"key": "global_service_times", "title": "예배 시간 정보 (모든 페이지)"},
-                {"key": "global_footer_contact", "title": "하단부 연락처 정보 (모든 페이지)"},
-            ]
-        }
-    ]
-    
-    if request.method == "POST":
-        selection = request.form.get("content_selection")
-        content_text = request.form.get("content")
-
-        if not selection or not content_text:
-            flash("모든 필드를 채워주세요", "danger")
-            return redirect(url_for("main.add_content"))
-            
-        # 선택된 옵션 찾기
-        selected_option = None
-        for category in content_options:
-            for option in category["options"]:
-                if option["key"] == selection:
-                    selected_option = option
-                    break
-            if selected_option:
-                break
-                
-        if not selected_option:
-            flash("잘못된 옵션이 선택되었습니다", "danger")
-            return redirect(url_for("main.add_content"))
-
-        # 중복 키 확인
-        existing = SiteContent.query.filter_by(key=selection).first()
-        if existing:
-            flash(f"''{selected_option['title']}' 콘텐츠는 이미 존재합니다. 수정하시려면 관리 페이지에서 해당 콘텐츠를 선택해주세요.", "warning")
-            return redirect(url_for("main.manage_content"))
-
-        new_content = SiteContent(key=selection, title=selected_option["title"], content=content_text)
-        db.session.add(new_content)
         db.session.commit()
+        flash(f"'{field_meta.label}' 항목이 저장되었습니다.", "success")
+        return redirect(url_for("main.manage_content", _anchor=key))
 
-        flash("콘텐츠가 성공적으로 추가되었습니다!", "success")
-        return redirect(url_for("main.manage_content"))
+    existing_items = {item.key: item for item in SiteContent.query.all()}
+    sections: List[Dict[str, Any]] = []
+    for section in iter_sections():
+        section_fields = []
+        for field in section.fields:
+            record = existing_items.get(field.key)
+            section_fields.append(
+                {
+                    "meta": field,
+                    "value": record.content if record else field.default,
+                    "updated_at": record.updated_at if record else None,
+                }
+            )
+        sections.append(
+            {
+                "id": section.id,
+                "title": section.title,
+                "description": section.description,
+                "fields": section_fields,
+            }
+        )
 
-    return render_template("add_content.html", content_options=content_options)
-
-
-@bp.route("/delete-content/<int:content_id>", methods=["POST"])
-@requires_auth()
-def delete_content(content_id) -> Any:
-    """콘텐츠 삭제"""
-    content = SiteContent.query.get_or_404(content_id)
-    db.session.delete(content)
-    db.session.commit()
-    flash("콘텐츠가 삭제되었습니다.", "success")
-    return redirect(url_for("main.manage_content"))
+    return render_template("manage_content.html", sections=sections)
 
 
 # 메시지 관련 라우트

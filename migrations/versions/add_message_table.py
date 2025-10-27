@@ -17,7 +17,11 @@ depends_on = None
 
 
 def upgrade():
-    # Create only the message table
+    bind = op.get_bind()
+    inspector = sa.inspect(bind)
+    if 'message' in inspector.get_table_names():
+        return
+
     op.create_table('message',
         sa.Column('id', sa.Integer(), nullable=False),
         sa.Column('name', sa.String(length=100), nullable=False),
@@ -31,5 +35,8 @@ def upgrade():
 
 
 def downgrade():
-    # Only drop the message table if needed
+    bind = op.get_bind()
+    inspector = sa.inspect(bind)
+    if 'message' not in inspector.get_table_names():
+        return
     op.drop_table('message')
