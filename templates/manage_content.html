@@ -1,221 +1,117 @@
 {% extends 'base.html' %}
+{% set active_page = 'manage_content' %}
 {% block title %}콘텐츠 관리 - University Church{% endblock %}
 
 {% block content %}
 <div class="container py-5">
-  <div class="d-flex justify-content-between align-items-center mb-4">
-    <h2>홈페이지 콘텐츠 관리</h2>
-    <a href="{{ url_for('main.add_content') }}" class="btn btn-success">새 콘텐츠 추가</a>
+  <div class="mb-4">
+    <h1 class="h3 mb-2">홈페이지 문구 관리</h1>
+    <p class="text-muted mb-1">이 페이지에서 홈페이지의 모든 문구를 한눈에 보고 바로 수정할 수 있습니다.</p>
+    <p class="text-muted mb-0">수정 후 <strong>저장</strong> 버튼을 누르면 즉시 적용됩니다. 필요하면 <strong>기본값으로</strong> 버튼으로 언제든 되돌릴 수 있습니다.</p>
   </div>
 
-  {% if contents %}
-  <div class="alert alert-info mb-4">
-    <h5>홈페이지 콘텐츠 관리 안내</h5>
-    <p>이 페이지에서는 웹사이트의 <strong>모든 텍스트 내용을 관리</strong>할 수 있습니다.</p>
-    <ul>
-      <li>각 콘텐츠의 제목에는 해당 콘텐츠가 <strong>어느 페이지의 어떤 영역에 표시되는지</strong> 명시되어 있습니다.</li>
-      <li>메인 페이지의 'Contact Us' 주소와 같은 정적 텍스트도 이곳에서 변경 가능합니다.</li>
-      <li>내용을 변경하려면 해당 항목의 <strong>'수정' 버튼</strong>을 클릭하세요.</li>
-      <li>새로운 콘텐츠를 추가하려면 상단의 <strong>'새 콘텐츠 추가'</strong> 버튼을 사용하세요.</li>
-    </ul>
-  </div>
-  
-  <!-- 콘텐츠 관리를 페이지 별로 그룹화 -->
-  <ul class="nav nav-tabs mb-4" id="contentTabs" role="tablist">
-    <li class="nav-item" role="presentation">
-      <button class="nav-link active" id="main-tab" data-bs-toggle="tab" data-bs-target="#main" 
-      type="button" role="tab" aria-controls="main" aria-selected="true">메인 페이지</button>
-    </li>
-    <li class="nav-item" role="presentation">
-      <button class="nav-link" id="about-tab" data-bs-toggle="tab" data-bs-target="#about" 
-      type="button" role="tab" aria-controls="about" aria-selected="false">교회 소개 페이지</button>
-    </li>
-    <li class="nav-item" role="presentation">
-      <button class="nav-link" id="global-tab" data-bs-toggle="tab" data-bs-target="#global" 
-      type="button" role="tab" aria-controls="global" aria-selected="false">공통 요소</button>
-    </li>
-    <li class="nav-item" role="presentation">
-      <button class="nav-link" id="other-tab" data-bs-toggle="tab" data-bs-target="#other" 
-      type="button" role="tab" aria-controls="other" aria-selected="false">기타 콘텐츠</button>
-    </li>
-  </ul>
-  
-  <div class="tab-content" id="contentTabsContent">
-    <!-- 메인 페이지 관련 콘텐츠 -->
-    <div class="tab-pane fade show active" id="main" role="tabpanel" aria-labelledby="main-tab">
-      <div class="table-responsive">
-        <table class="table table-striped">
-          <thead>
-            <tr>
-              <th>식별키</th>
-              <th>내용 대상</th>
-              <th>마지막 수정일</th>
-              <th>작업</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for content in contents %}
-              {% if content.key.startswith('main_') %}
-              <tr>
-                <td><code>{{ content.key }}</code></td>
-                <td>
-                  <div class="fw-bold">{{ content.title }}</div>
-                  <div class="small text-muted">{{ content.content|truncate(50) }}</div>
-                </td>
-                <td>{{ content.updated_at.strftime('%Y-%m-%d %H:%M') }}</td>
-                <td>
-                  <div class="d-flex gap-2">
-                    <a href="{{ url_for('main.edit_content', content_id=content.id) }}" class="btn btn-primary btn-sm">수정</a>
-                    <form action="{{ url_for('main.delete_content', content_id=content.id) }}" method="post" onsubmit="return confirm('정말 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.');">
-                      <button type="submit" class="btn btn-danger btn-sm">삭제</button>
-                    </form>
-                  </div>
-                </td>
-              </tr>
-              {% endif %}
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
-    </div>
-    
-    <!-- 교회 소개 페이지 관련 콘텐츠 -->
-    <div class="tab-pane fade" id="about" role="tabpanel" aria-labelledby="about-tab">
-      <div class="table-responsive">
-        <table class="table table-striped">
-          <thead>
-            <tr>
-              <th>식별키</th>
-              <th>내용 대상</th>
-              <th>마지막 수정일</th>
-              <th>작업</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for content in contents %}
-              {% if content.key.startswith('about_') %}
-              <tr>
-                <td><code>{{ content.key }}</code></td>
-                <td>
-                  <div class="fw-bold">{{ content.title }}</div>
-                  <div class="small text-muted">{{ content.content|truncate(50) }}</div>
-                </td>
-                <td>{{ content.updated_at.strftime('%Y-%m-%d %H:%M') }}</td>
-                <td>
-                  <div class="d-flex gap-2">
-                    <a href="{{ url_for('main.edit_content', content_id=content.id) }}" class="btn btn-primary btn-sm">수정</a>
-                    <form action="{{ url_for('main.delete_content', content_id=content.id) }}" method="post" onsubmit="return confirm('정말 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.');">
-                      <button type="submit" class="btn btn-danger btn-sm">삭제</button>
-                    </form>
-                  </div>
-                </td>
-              </tr>
-              {% endif %}
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
-    </div>
-    
-    <!-- 공통 요소 관련 콘텐츠 -->
-    <div class="tab-pane fade" id="global" role="tabpanel" aria-labelledby="global-tab">
-      <div class="table-responsive">
-        <table class="table table-striped">
-          <thead>
-            <tr>
-              <th>식별키</th>
-              <th>내용 대상</th>
-              <th>마지막 수정일</th>
-              <th>작업</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for content in contents %}
-              {% if content.key.startswith('global_') %}
-              <tr>
-                <td><code>{{ content.key }}</code></td>
-                <td>
-                  <div class="fw-bold">{{ content.title }}</div>
-                  <div class="small text-muted">{{ content.content|truncate(50) }}</div>
-                </td>
-                <td>{{ content.updated_at.strftime('%Y-%m-%d %H:%M') }}</td>
-                <td>
-                  <div class="d-flex gap-2">
-                    <a href="{{ url_for('main.edit_content', content_id=content.id) }}" class="btn btn-primary btn-sm">수정</a>
-                    <form action="{{ url_for('main.delete_content', content_id=content.id) }}" method="post" onsubmit="return confirm('정말 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.');">
-                      <button type="submit" class="btn btn-danger btn-sm">삭제</button>
-                    </form>
-                  </div>
-                </td>
-              </tr>
-              {% endif %}
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
-    </div>
-    
-    <!-- 기타 콘텐츠 -->
-    <div class="tab-pane fade" id="other" role="tabpanel" aria-labelledby="other-tab">
-      <div class="table-responsive">
-        <table class="table table-striped">
-          <thead>
-            <tr>
-              <th>식별키</th>
-              <th>내용 대상</th>
-              <th>마지막 수정일</th>
-              <th>작업</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for content in contents %}
-              {% if not content.key.startswith('main_') and not content.key.startswith('about_') and not content.key.startswith('global_') %}
-              <tr>
-                <td><code>{{ content.key }}</code></td>
-                <td>
-                  <div class="fw-bold">{{ content.title }}</div>
-                  <div class="small text-muted">{{ content.content|truncate(50) }}</div>
-                </td>
-                <td>{{ content.updated_at.strftime('%Y-%m-%d %H:%M') }}</td>
-                <td>
-                  <div class="d-flex gap-2">
-                    <a href="{{ url_for('main.edit_content', content_id=content.id) }}" class="btn btn-primary btn-sm">수정</a>
-                    <form action="{{ url_for('main.delete_content', content_id=content.id) }}" method="post" onsubmit="return confirm('정말 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.');">
-                      <button type="submit" class="btn btn-danger btn-sm">삭제</button>
-                    </form>
-                  </div>
-                </td>
-              </tr>
-              {% endif %}
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-  {% else %}
-  <div class="alert alert-info">
-    <p class="mb-0">아직 등록된 콘텐츠가 없습니다. 새 콘텐츠를 추가해주세요.</p>
-  </div>
-  {% endif %}
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
 
-  <div class="alert alert-warning mt-4">
-    <h5>콘텐츠 사용 방법</h5>
-    <p>템플릿에서 다음과 같이 콘텐츠를 불러올 수 있습니다:</p>
-    <pre><code>{{ '{{ get_content("your_content_key") }}' }}</code></pre>
-    <p>마크다운 형식도 지원됩니다. 다음과 같이 사용하세요:</p>
-    <pre><code>{{ '{{ get_content("your_content_key") | markdown }}' }}</code></pre>
-  </div>
-  
-  <div class="alert alert-secondary mt-3">
-    <h5>콘텐츠 키 명명 규칙</h5>
-    <p>키는 다음 규칙을 따르며 지정됩니다:</p>
-    <ul>
-      <li><code>main_*</code>: 메인 페이지에 표시되는 콘텐츠 (예: <code>main_top_welcome</code>)</li>
-      <li><code>about_*</code>: 교회 소개 페이지에 표시되는 콘텐츠 (예: <code>about_page_intro</code>)</li>
-      <li><code>global_*</code>: 여러 페이지에 공통으로 표시되는 콘텐츠 (예: <code>global_footer_contact</code>)</li>
-    </ul>
-    <p><strong>팁</strong>: 해당 콘텐츠가 표시되는 위치와 목적을 명확하게 알 수 있도록 키와 제목을 지정하세요.</p>
+  <div class="accordion" id="contentSections">
+    {% for section in sections %}
+    <div class="accordion-item" id="{{ section.id }}">
+      <h2 class="accordion-header" id="heading-{{ section.id }}">
+        <button class="accordion-button {% if not loop.first %}collapsed{% endif %}" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-{{ section.id }}" aria-expanded="{{ 'true' if loop.first else 'false' }}" aria-controls="collapse-{{ section.id }}">
+          {{ section.title }}
+        </button>
+      </h2>
+      <div id="collapse-{{ section.id }}" class="accordion-collapse collapse {% if loop.first %}show{% endif %}" aria-labelledby="heading-{{ section.id }}" data-bs-parent="#contentSections">
+        <div class="accordion-body">
+          <p class="text-muted small mb-4">{{ section.description }}</p>
+          {% for field in section.fields %}
+          <form method="POST" class="card mb-3 shadow-sm border-0">
+            <div class="card-body">
+              <input type="hidden" name="key" value="{{ field.meta.key }}">
+              <div class="mb-2">
+                <label class="form-label fw-semibold" for="{{ field.meta.key }}">{{ field.meta.label }}</label>
+                {% if field.meta.input_type == 'text' %}
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="{{ field.meta.key }}"
+                    name="content"
+                    value="{{ field.value|e }}"
+                  >
+                {% else %}
+                  <textarea
+                    class="form-control"
+                    id="{{ field.meta.key }}"
+                    name="content"
+                    rows="6"
+                    data-editor-type="{{ field.meta.format }}"
+                  >{{ field.value|e }}</textarea>
+                {% endif %}
+              </div>
+              {% if field.meta.help_text %}
+                <div class="form-text">{{ field.meta.help_text }}</div>
+              {% endif %}
+              {% if field.meta.format == 'markdown' %}
+                <div class="form-text">마크다운 사용 가능: <code>**굵게**</code>, <code>- 목록</code>, <code>[링크](https://...)</code> 등</div>
+              {% endif %}
+              {% if field.updated_at %}
+                <div class="form-text text-muted">마지막 수정: {{ field.updated_at.strftime('%Y-%m-%d %H:%M') }}</div>
+              {% endif %}
+              <div class="form-text text-muted">
+                <span class="badge bg-light text-dark border">{{ field.meta.key }}</span>
+              </div>
+            </div>
+            <div class="card-footer bg-white border-top-0 d-flex justify-content-end gap-2">
+              <button type="button" class="btn btn-outline-secondary btn-sm" data-reset="{{ field.meta.key }}" data-default='{{ field.meta.default|tojson|safe }}'>
+                기본값으로
+              </button>
+              <button type="submit" class="btn btn-primary btn-sm">저장</button>
+            </div>
+          </form>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+    {% endfor %}
   </div>
 </div>
+{% endblock %}
+
+{% block scripts %}
+  {{ super() }}
+  <script>
+    document.querySelectorAll('[data-reset]').forEach((button) => {
+      button.addEventListener('click', () => {
+        const rawDefault = button.dataset.default;
+        if (!rawDefault) {
+          return;
+        }
+        let defaultValue = "";
+        try {
+          defaultValue = JSON.parse(rawDefault);
+        } catch (error) {
+          console.error("기본값을 불러오지 못했습니다.", error);
+          return;
+        }
+        const form = button.closest("form");
+        if (!form) {
+          return;
+        }
+        const input = form.querySelector('[name="content"]');
+        if (!input) {
+          return;
+        }
+        input.value = defaultValue;
+        input.focus();
+      });
+    });
+  </script>
 {% endblock %}

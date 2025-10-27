@@ -1,11 +1,11 @@
 {% extends 'base.html' %}
-{% block title %}메시지 남기기 - University Church{% endblock %}
+{% block title %}{{ get_content('message_page_title', '메시지 남기기 - University Church') }}{% endblock %}
 
 {% block content %}
 <div class="container py-5">
   <div class="row">
     <div class="col-lg-8 mx-auto">
-      <h2 class="text-center mb-4">목사님께 메시지 남기기</h2>
+      <h2 class="text-center mb-4">{{ get_content('message_heading', '목사님께 메시지 남기기') }}</h2>
       
       {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
@@ -22,35 +22,35 @@
         <div class="card-body p-4">
           <form method="POST" action="{{ url_for('main.send_message') }}">
             <div class="mb-3">
-              <label for="name" class="form-label">이름 <span class="text-danger">*</span></label>
+              <label for="name" class="form-label">{{ get_content('message_name_label', '이름') }} <span class="text-danger">*</span></label>
               <input type="text" class="form-control" id="name" name="name" required>
             </div>
             
             <div class="mb-3">
-              <label for="email" class="form-label">이메일 (선택사항)</label>
-              <input type="email" class="form-control" id="email" name="email" placeholder="답변을 받길 원하시면 이메일을 입력해주세요">
-              <div class="form-text">이메일은 답변을 드리기 위한 용도로만 사용됩니다.</div>
+              <label for="email" class="form-label">{{ get_content('message_email_label', '이메일 (선택사항)') }}</label>
+              <input type="email" class="form-control" id="email" name="email" placeholder="{{ get_content('message_email_placeholder', '답변을 받길 원하시면 이메일을 입력해주세요') }}">
+              <div class="form-text">{{ get_content('message_email_help', '이메일은 답변을 드리기 위한 용도로만 사용됩니다.') }}</div>
             </div>
             
             <div class="mb-3">
-              <label for="subject" class="form-label">제목 <span class="text-danger">*</span></label>
+              <label for="subject" class="form-label">{{ get_content('message_subject_label', '제목') }} <span class="text-danger">*</span></label>
               <input type="text" class="form-control" id="subject" name="subject" required>
             </div>
             
             <div class="mb-3">
-              <label for="content" class="form-label">메시지 내용 <span class="text-danger">*</span></label>
+              <label for="content" class="form-label">{{ get_content('message_content_label', '메시지 내용') }} <span class="text-danger">*</span></label>
               <textarea class="form-control" id="content" name="content" rows="5" required></textarea>
             </div>
             
             <div class="d-grid">
-              <button type="submit" class="btn btn-primary py-2">메시지 보내기</button>
+              <button type="submit" class="btn btn-primary py-2">{{ get_content('message_submit_label', '메시지 보내기') }}</button>
             </div>
           </form>
         </div>
       </div>
       
       <div class="text-center mt-4">
-        <p class="text-muted">보내신 메시지는 목사님께 전달됩니다. 답변이 필요하신 경우 이메일을 남겨주세요.</p>
+        <p class="text-muted">{{ get_content('message_footer_notice', '보내신 메시지는 목사님께 전달됩니다. 답변이 필요하신 경우 이메일을 남겨주세요.') }}</p>
       </div>
     </div>
   </div>

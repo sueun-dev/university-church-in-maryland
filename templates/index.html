@@ -20,7 +20,8 @@
     <div class="row g-0 align-items-center flex-column-reverse flex-md-row">
       <div class="col-md-6 p-5 mt-lg-5">
         <h1 class="display-5 animated fadeIn mb-4">
-          <span class="text-primary">University Church</span> in College Park
+          <span class="text-primary">{{ get_content('home_header_highlight', 'University Church') }}</span>
+          {{ get_content('home_header_title', 'in College Park') }}
         </h1>
         <div class="animated fadeIn mb-4 pb-2">
           {{ get_content('main_top_welcome')|markdown }}
@@ -48,29 +49,29 @@
     <div class="bg-white rounded p-4 border border-primary border-opacity-25">
       <div class="row justify-content-center">
         <div class="col-lg-10 text-center wow fadeIn" data-wow-delay="0.1s">
-          <h1 class="mb-4">예배 및 모임 시간</h1>
+          <h1 class="mb-4">{{ get_content('home_schedule_section_title', '예배 및 모임 시간') }}</h1>
           <div class="row justify-content-center g-4">
             <div class="col-md-4 col-sm-6 wow fadeInUp" data-wow-delay="0.1s">
               <div class="bg-light rounded p-4 h-100">
-                <h6>주일 예배</h6>
-                <p>매주 주일 오전 11시</p>
+                <h6>{{ get_content('home_schedule_service_1_title', '주일 예배') }}</h6>
+                <p>{{ get_content('home_schedule_service_1_detail', '매주 주일 오전 11시') }}</p>
               </div>
             </div>
             <div class="col-md-4 col-sm-6 wow fadeInUp" data-wow-delay="0.3s">
               <div class="bg-light rounded p-4 h-100">
-                <h6>성경 공부</h6>
-                <p>매주 주일 오후 1시</p>
+                <h6>{{ get_content('home_schedule_service_2_title', '성경 공부') }}</h6>
+                <p>{{ get_content('home_schedule_service_2_detail', '매주 주일 오후 1시') }}</p>
               </div>
             </div>
             <div class="col-md-4 col-sm-6 wow fadeInUp" data-wow-delay="0.5s">
               <div class="bg-light rounded p-4 h-100">
-                <h6>새벽 기도회</h6>
-                <p>화-토 오전 6시 Zoom</p>
+                <h6>{{ get_content('home_schedule_service_3_title', '새벽 기도회') }}</h6>
+                <p>{{ get_content('home_schedule_service_3_detail', '화-토 오전 6시 Zoom') }}</p>
               </div>
             </div>
           </div>
           <a class="btn btn-primary py-3 px-5 mt-4" href="{{ zoom_url }}" target="_blank">
-            새벽 기도회 Zoom {% if zoom_password %}(passwd: {{ zoom_password }}){% endif %}
+            {{ get_content('home_zoom_button_label', '새벽 기도회 Zoom') }} {% if zoom_password %}(passwd: {{ zoom_password }}){% endif %}
           </a>
           
           {% if is_pastor %}
@@ -96,7 +97,7 @@
 
 <!-- Google Map (Outside Vision Box, Center-Aligned) -->
 <div class="container py-5">
-  <h3 class="text-center mb-4">찾아오는 길</h3>
+  <h3 class="text-center mb-4">{{ get_content('home_map_section_title', '찾아오는 길') }}</h3>
   <div class="row justify-content-center">
     <div class="col-lg-10">
       <div class="ratio ratio-16x9 border rounded overflow-hidden">
@@ -115,14 +116,14 @@
   <div class="container-xxl py-5">
     <div class="container">
       <div class="text-center mx-auto mb-5 wow fadeInUp" data-wow-delay="0.1s" style="max-width: 600px;">
-        <h1 class="mb-3">Contact Us</h1>
-        <p>{{ get_content("main_contact_address", "8108 54th Ave. College Park, MD 20740") }}</p>
+        <h1 class="mb-3">{{ get_content('home_contact_heading', 'Contact Us') }}</h1>
+        <p>{{ get_content('home_contact_description', '8108 54th Ave. College Park, MD 20740')|nl2br|safe }}</p>
       </div>
       <div class="row g-4 justify-content-center">
         <div class="col-lg-6 text-center wow fadeIn" data-wow-delay="0.5s">
           <div class="d-flex flex-wrap justify-content-center gap-3">
             <a href="#" class="btn btn-secondary py-3 px-4" onclick="copyEmailToClipboard(); return false;">
-              <i class="fa fa-envelope me-2"></i>이메일
+              <i class="fa fa-envelope me-2"></i>{{ get_content('home_contact_email_button', '이메일') }}
             </a>
           </div>
         </div>
@@ -132,6 +133,6 @@
 
   <!-- 메시지 남기기 링크 추가 -->
   <div class="container text-center mt-4">
-    <a href="{{ url_for('main.send_message') }}" class="btn btn-primary">목사님께 메시지 남기기</a>
+    <a href="{{ url_for('main.send_message') }}" class="btn btn-primary">{{ get_content('home_message_button_label', '목사님께 메시지 남기기') }}</a>
   </div>
 {% endblock %}
