@@ -17,8 +17,8 @@
 {% block content %}
   <!-- Header Section -->
   <div class="container-fluid header bg-white p-0">
-    <div class="row g-0 align-items-center flex-column-reverse flex-md-row">
-      <div class="col-md-6 p-5 mt-lg-5">
+    <div class="row g-0 align-items-center">
+      <div class="col-12 col-lg-10 col-xl-8 p-5 mt-lg-5 mx-auto text-center text-md-start">
         <h1 class="display-5 animated fadeIn mb-4">
           <span class="text-primary">{{ get_content('home_header_highlight', 'University Church') }}</span>
           {{ get_content('home_header_title', 'in College Park') }}
@@ -28,15 +28,6 @@
         </div>
         <div class="animated fadeIn mb-4 pb-2">
           {{ get_content('main_church_intro')|markdown }}
-        </div>
-      </div>
-      <div class="col-md-6 fadeIn d-flex justify-content-center">
-        <div class="owl-carousel header-carousel">
-          <div class="owl-carousel-item">
-            <div class="d-flex justify-content-center">
-              <img class="img-fluid mx-auto" src="/static/img/school_main_02.png" oncontextmenu="return false;" style="max-width: 70%;" alt="Church Main 02" />
-            </div>
-          </div>
         </div>
       </div>
     </div>
