@@ -1,5 +1,60 @@
+# Environment
 .env
+.env.local
+.env.*.local
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.pyright/
+.tox/
+htmlcov/
+.coverage
+.coverage.*
+coverage.xml
+*.egg-info/
+build/
+dist/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Instance / SQLite databases
+instance/
+*.db
+*.sqlite
+*.sqlite3
+
+# Backups
+*_backup_*.sql
+*_backup_*.db
+
+# Logs
+*.log
+log.txt
+logs/
+
+# User uploads (keep the directory, not the contents)
+uploads/*
+!uploads/.gitkeep
+
+# Misc
 .file.txt
-__pycache__
-.pytest_cache
-.ruff_cache

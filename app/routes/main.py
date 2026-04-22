@@ -1,6 +1,6 @@
 import os
 import time
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Any, List, Dict, Tuple
 from flask import (
     render_template, Blueprint, request,
@@ -64,19 +64,20 @@ def ensure_site_content_defaults() -> None:
         db.session.commit()
 
 
-# 모든 템플릿에서 get_content 함수 사용 가능하도록 설정
-@bp.context_processor
+# 모든 템플릿에서 get_content 함수 사용 가능하도록 설정 (error 페이지 포함)
+@bp.app_context_processor
 def inject_utility_functions():
-    # get_content 함수와 함께 읽지 않은 메시지 수를 템플릿에 제공
     context = {
-        "get_content": get_content
+        "get_content": get_content,
     }
-    
+
     # 목사님이 로그인한 경우에만 읽지 않은 메시지 수 계산
-    if session.get('is_pastor'):
-        unread_count = Message.query.filter_by(is_read=False).count()
-        context["unread_count"] = unread_count
-    
+    if session.get("is_pastor"):
+        try:
+            context["unread_count"] = Message.query.filter_by(is_read=False).count()
+        except Exception:
+            context["unread_count"] = 0
+
     return context
 
 # nl2br 필터 등록
@@ -88,7 +89,7 @@ os.makedirs(Config.UPLOAD_FOLDER, exist_ok=True)
 
 # Helper functions
 def mark_new_files(files: List[PDFFile]) -> None:
-    now = datetime.utcnow()
+    now = datetime.now(timezone.utc).replace(tzinfo=None)
     for file in files:
         setattr(file, "is_new", (now - file.upload_date) <= timedelta(days=7))
 
@@ -300,7 +301,7 @@ def upload_file() -> Any:
             safe_filename = secure_filename(original_filename)
             if not safe_filename:
                 _, ext = os.path.splitext(original_filename)
-                safe_filename = f"{datetime.utcnow().strftime('%Y%m%d%H%M%S')}{ext}"
+                safe_filename = f"{datetime.now(timezone.utc).strftime('%Y%m%d%H%M%S')}{ext}"
                 
             filepath = os.path.join(Config.UPLOAD_FOLDER, safe_filename)
             file.save(filepath)

@@ -44,7 +44,7 @@ def register_failed_attempt(ip: str) -> int:
     return remaining_attempts
 
 
-def requires_auth(force_reauth: bool = False) -> Callable:
+def requires_auth() -> Callable:
     """인증 필요 데코레이터"""
 
     def decorator(f: Callable) -> Callable:

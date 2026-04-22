@@ -1,5 +1,10 @@
+from datetime import datetime, timezone
+
 from . import db
-from datetime import datetime
+
+
+def _utcnow() -> datetime:
+    return datetime.now(timezone.utc)
 
 
 class PDFFile(db.Model):
@@ -39,7 +44,7 @@ class ZoomLink(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     url = db.Column(db.String(255), nullable=False)
     password = db.Column(db.String(50), nullable=True)
-    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=_utcnow, onupdate=_utcnow)
 
 
 class SiteContent(db.Model):
@@ -48,7 +53,7 @@ class SiteContent(db.Model):
     key = db.Column(db.String(50), unique=True, nullable=False)  # 콘텐츠 식별자 (welcome_message, about_church 등)
     title = db.Column(db.String(100), nullable=False)  # 콘텐츠 제목
     content = db.Column(db.Text, nullable=False)  # 콘텐츠 내용
-    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=_utcnow, onupdate=_utcnow)
 
 
 class Message(db.Model):
@@ -58,5 +63,5 @@ class Message(db.Model):
     email = db.Column(db.String(100), nullable=True)  # 답변받을 이메일 (선택)
     subject = db.Column(db.String(200), nullable=False)  # 메시지 제목
     content = db.Column(db.Text, nullable=False)  # 메시지 내용
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)  # 작성 시간
+    created_at = db.Column(db.DateTime, default=_utcnow)  # 작성 시간
     is_read = db.Column(db.Boolean, default=False)  # 읽음 상태

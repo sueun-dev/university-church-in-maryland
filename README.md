@@ -22,8 +22,7 @@ https://www.uchurchmd.org/
 | Cloud Platform       | Google Cloud Platform (GCP)            | Hosting via App Engine and Cloud SQL for databases      |
 | Security             | Werkzeug Security, Flask sessions      | Secure password hashing, session handling, IP blocking  |
 | Front-End            | Bootstrap, FontAwesome, Custom CSS     | Responsive UI with rich visual elements                 |
-| Code Quality         | Black, flake8, isort                    | Automated formatting, linting, and import sorting       |
-| Debugging            | Poetry built-in tools                  | Simplified debugging and dependency resolution          |
+| Code Quality         | Ruff, Pyright, Pytest                   | Formatting, linting, static type checking, and tests   |
 
 ## Project Structure Overview
 
@@ -42,10 +41,10 @@ https://www.uchurchmd.org/
 
 ### Prerequisites
 
-- Python 3.8 or higher
+- Python 3.11 or higher
 - Google Cloud Platform account (App Engine and Cloud SQL)
-- PostgreSQL/MySQL for Cloud SQL (recommended)
-- Poetry (for dependency management)
+- PostgreSQL for Cloud SQL (recommended)
+- Poetry 2.x (for dependency management)
 
 ### Installation
 
@@ -71,16 +70,25 @@ cp .env.example .env
 # Update .env with your actual environment variables
 ```
 
-Initialize and migrate the database:
+Apply database migrations:
 ```bash
-flask db init
-flask db migrate
-flask db upgrade
+poetry run flask --app run db upgrade
 ```
 
-Run the application locally:
+Run the application locally (Socket.IO enabled):
 ```bash
-flask run
+poetry run python run.py
+```
+
+Run the test suite:
+```bash
+poetry run pytest
+```
+
+Lint and type-check:
+```bash
+poetry run ruff check .
+poetry run pyright
 ```
 
 ## Deploying to Google Cloud Platform (GCP)
@@ -109,5 +117,5 @@ Developed by [Sueun Cho](https://github.com/sueun-dev).
 
 ---
 
-_Last Updated: March 15, 2025_
+_Last Updated: April 22, 2026_
 
